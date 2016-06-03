@@ -49,14 +49,14 @@ import com.androidplot.xy.XYSeriesFormatter;
 import com.androidplot.xy.XYStepMode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.CameraUpdateFactory;
+/*import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.PolylineOptions; */
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -71,8 +71,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import de.unima.ar.collector.api.BroadcastService;
-import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.AdapterController;
 import de.unima.ar.collector.controller.BluetoothController;
@@ -81,7 +81,7 @@ import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.extended.SensorSelfTest;
 import de.unima.ar.collector.sensors.CustomCollector;
-import de.unima.ar.collector.sensors.GPSCollector;
+//import de.unima.ar.collector.sensors.GPSCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
 import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.shared.Settings;
@@ -98,7 +98,7 @@ import de.unima.ar.collector.ui.SeparatedListAdapter;
 import de.unima.ar.collector.ui.SettingActivity;
 import de.unima.ar.collector.ui.dialog.CreateCorrectionDialog;
 import de.unima.ar.collector.ui.dialog.DatabaseSensorDialog;
-import de.unima.ar.collector.ui.dialog.GPSDatabaseDialog;
+//import de.unima.ar.collector.ui.dialog.GPSDatabaseDialog;
 import de.unima.ar.collector.util.CustomPointFormatter;
 import de.unima.ar.collector.util.DBUtils;
 import de.unima.ar.collector.util.DateFormat;
@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity
     private final static ArrayList<ScreenInfo> lastScreens = new ArrayList<>();
 
     private View              GPSView;
-    private ArrayList<Marker> positionMarkers;
-    private Polyline          polyline;
+    //private ArrayList<Marker> positionMarkers;
+   // private Polyline          polyline;
 
     private SensorSelfTest lastSensorSelfTest = null;
 
@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity
 
         // bluetooth observation
         if(BluetoothAdapter.getDefaultAdapter() != null) {
-            ListenerService.addDevice(deviceID, BluetoothAdapter.getDefaultAdapter().getAddress());
+            //ListenerService.addDevice(deviceID, BluetoothAdapter.getDefaultAdapter().getAddress());
             BluetoothController.getInstance().register(this);
         } else {
-            ListenerService.addDevice(deviceID, "");
+            //ListenerService.addDevice(deviceID, "");
         }
 
         // register
@@ -163,9 +163,9 @@ public class MainActivity extends AppCompatActivity
         startService(new Intent(MainActivity.this, SensorDataCollectorService.class));
 
         // start wearable app
-        BroadcastService.initInstance(this);
-        BroadcastService.getInstance().getAPIClient().connect();
-        BroadcastService.getInstance().sendMessage("/activity/start", "");
+        //BroadcastService.initInstance(this);
+        //BroadcastService.getInstance().getAPIClient().connect();
+        //BroadcastService.getInstance().sendMessage("/activity/start", "");
 
         // start handheld app
         showSensoren();
@@ -379,10 +379,10 @@ public class MainActivity extends AppCompatActivity
                         GPSView = MainActivity.this.getLayoutInflater().inflate(R.layout.googlemaplayout, null);
                     }
 
-                    GPSDatabaseDialog dialog = new GPSDatabaseDialog();
-                    dialog.setContext(MainActivity.this);
+                    //GPSDatabaseDialog dialog = new GPSDatabaseDialog();
+                   // dialog.setContext(MainActivity.this);
 
-                    dialog.show(getSupportFragmentManager(), "GPSDatabaseDialog");
+                   // dialog.show(getSupportFragmentManager(), "GPSDatabaseDialog");
                 } else if(showConfigs.containsKey(sensorName + deviceID)) {
                     DatabaseSensorDialog dialog = new DatabaseSensorDialog();
                     dialog.setContext(MainActivity.this);
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity
      * @param start Anfangszeit für die Anzeige der Daten
      * @param end   Endzeitpunkt
      */
-    @SuppressLint( { "SimpleDateFormat", "InflateParams" } )
+    /*@SuppressLint( { "SimpleDateFormat", "InflateParams" } )
     public void showAnalyzeDatabaseGPS(String start, String end)
     {
         addScreen(Screens.ANALYZE_DATABASE);
@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity
 
         polyline = map.addPolyline(polyOptions);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15));
-    }
+    }*/
 
 
     public void showAnalyzeDatabaseData(final PlotConfiguration pc, final String start, final String end, final boolean showActivity, final boolean showPosition, final boolean showPosture)
@@ -879,7 +879,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Zeigt GoogleMaps an mit GPS position
      */
-    @SuppressLint( "InflateParams" )
+    /*@SuppressLint( "InflateParams" )
     public void showGPSAnalyze()
     {
         addScreen(Screens.ANALYZE);
@@ -920,7 +920,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
-    }
+    }*/
 
 
     /**
@@ -939,7 +939,9 @@ public class MainActivity extends AppCompatActivity
         List<Triple<String, String, String>> activeSensors = new ArrayList<>();
 
         // devices
-        Set<String> devices = ListenerService.getDevices();
+        //Set<String> devices = ListenerService.getDevices();
+        Set<String> devices = new HashSet<String>();
+
 
         // select active sensors
         Set<Integer> enabledSensors = SensorDataCollectorService.getInstance().getSCM().getEnabledCollectors();
@@ -1059,7 +1061,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 } else if(cc.isRegistered() && cc.getType() == sensorId) {
-                    showGPSAnalyze();
+                    //showGPSAnalyze();
                     break;
                 }
             }
@@ -1141,7 +1143,7 @@ public class MainActivity extends AppCompatActivity
 
         SeparatedListAdapter sadapter = new SeparatedListAdapter(this, 0);
 
-        ArrayList<String> tmp = new ArrayList<>(ListenerService.getDevices());
+        ArrayList<String> tmp = new ArrayList<>(new HashSet<String>());
         String deviceID = DeviceID.get(this);
         tmp.remove(deviceID);
         tmp.add(deviceID + " (" + getString(R.string.device_localdevice) + ")");
@@ -1227,7 +1229,7 @@ public class MainActivity extends AppCompatActivity
                         if(!service.getSCM().removeSensor(sensorName, sensorID)) {
                             Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                         } else {
-                            BroadcastService.getInstance().sendMessage("/sensor/unregister", String.valueOf(sensorID));
+                            //BroadcastService.getInstance().sendMessage("/sensor/unregister", String.valueOf(sensorID));
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
                             chBx.setChecked(false);
                             SensorDataUtil.flushSensorDataCache(sensorID, DeviceID.get(MainActivity.this));
@@ -1237,7 +1239,7 @@ public class MainActivity extends AppCompatActivity
                             Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
                         } else {
                             if(Settings.WEARSENSOR) {
-                                BroadcastService.getInstance().sendMessage("/sensor/register", "[" + sensorID + ", " + sc.getSensorRate() + "]");
+                                //BroadcastService.getInstance().sendMessage("/sensor/register", "[" + sensorID + ", " + sc.getSensorRate() + "]");
                             }
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                             service.getSCM().registerSensorCollector(sensorID);
@@ -1568,7 +1570,7 @@ public class MainActivity extends AppCompatActivity
         hideNotification();
 
         // stop wearable app
-        BroadcastService.getInstance().sendMessage("/activity/destroy", "false");
+        //BroadcastService.getInstance().sendMessage("/activity/destroy", "false");
         //        if(ListenerService.getDevices().size() > 1) {
         //            Toast.makeText(this, getString(R.string.app_toast_destroy1), Toast.LENGTH_SHORT).show();
         //        }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import de.unima.ar.collector.R;
-import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.BroadcastService;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.ui.dialog.SelectActivityDialog;
@@ -145,10 +145,10 @@ public class ActivityOnItemClickListener implements android.widget.AdapterView.O
 
             // inform other devices
             if(tableName.equals(SQLTableName.POSTURES)) {
-                BroadcastService.getInstance().sendMessage("/database/response/currentPosture", name);
+                //BroadcastService.getInstance().sendMessage("/database/response/currentPosture", name);
             }
             if(tableName.equals(SQLTableName.POSITIONS)) {
-                BroadcastService.getInstance().sendMessage("/database/response/currentPosition", name);
+                //BroadcastService.getInstance().sendMessage("/database/response/currentPosition", name);
             }
 
             // update UI

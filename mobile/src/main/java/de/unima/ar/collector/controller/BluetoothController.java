@@ -13,11 +13,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import de.unima.ar.collector.MainActivity;
 import de.unima.ar.collector.R;
-import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.util.UIUtils;
 
 public class BluetoothController extends BroadcastReceiver
@@ -86,7 +87,7 @@ public class BluetoothController extends BroadcastReceiver
             case BluetoothDevice.ACTION_ACL_CONNECTED:
                 if(this.connectedDevices.containsKey(deviceAddress) && this.connectedDevices.get(deviceAddress) == -1) {
                     String deviceID = this.lostDevices.inverse().get(deviceAddress);
-                    ListenerService.addDevice(deviceID, deviceAddress);
+                    //ListenerService.addDevice(deviceID, deviceAddress);
                     this.connectedDevices.put(deviceAddress, 1);
 
                     MainActivity main = (MainActivity) ActivityController.getInstance().get("MainActivity");
@@ -98,9 +99,11 @@ public class BluetoothController extends BroadcastReceiver
                 break;
 
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-                if(ListenerService.getDevicesAddresses().contains(deviceAddress)) { // bluetooth connection lost but app did not say goodbye
-                    String deviceID = ListenerService.getDeviceID(deviceAddress);
-                    ListenerService.rmDevice(deviceAddress);        // disconnect app connection
+                //if(ListenerService.getDevicesAddresses().contains(deviceAddress)) { // bluetooth connection lost but app did not say goodbye
+                if(new HashSet<String>().contains(deviceAddress)) { // bluetooth connection lost but app did not say goodbye
+                    //String deviceID = ListenerService.getDeviceID(deviceAddress);
+                    String deviceID = "überschrieben";
+                    //ListenerService.rmDevice(deviceAddress);        // disconnect app connection
                     this.connectedDevices.put(deviceAddress, -1);   // lost
                     this.lostDevices.put(deviceID, deviceAddress);  // store deviceID
 
@@ -111,7 +114,8 @@ public class BluetoothController extends BroadcastReceiver
                     this.connectedDevices.remove(deviceAddress);
                 }
 
-                if(this.getConnectedDevices() < ListenerService.getNumberOfDevices() - 1) {
+                //if(this.getConnectedDevices() < ListenerService.getNumberOfDevices() - 1) {
+                if(this.getConnectedDevices() < 10 - 1) {
                     BluetoothAdapter.getDefaultAdapter().disable();
                 }
                 break;

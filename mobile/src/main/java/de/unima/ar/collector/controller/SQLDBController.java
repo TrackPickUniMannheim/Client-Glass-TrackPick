@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.unima.ar.collector.SensorDataCollectorService;
-import de.unima.ar.collector.api.BroadcastService;
-import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.sensors.CustomCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
@@ -238,13 +238,13 @@ public class SQLDBController
             SQLDBController.getInstance().registerDevice(deviceID);
 
             // external devices
-            for(String device : ListenerService.getDevices()) {
+            /*for(String device : ListenerService.getDevices()) {
                 DatabaseHelper.createDeviceDependentTables(device);
                 SQLDBController.getInstance().registerDevice(device);
-            }
+            } */
 
             // inform other devices
-            BroadcastService.getInstance().sendMessage("/database/delete", "");
+            //BroadcastService.getInstance().sendMessage("/database/delete", "");
         }
 
         return true;

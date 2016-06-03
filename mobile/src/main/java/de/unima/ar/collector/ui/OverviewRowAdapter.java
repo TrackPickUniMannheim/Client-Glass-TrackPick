@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import de.unima.ar.collector.R;
 import de.unima.ar.collector.SensorDataCollectorService;
-import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.util.SensorDataUtil;
@@ -92,7 +92,7 @@ public class OverviewRowAdapter extends ArrayAdapter<String>
         } else if(position == 3) {
             holder.text.setText(context.getString(R.string.main_overview_smartwatch));
             holder.text2.setText(context.getString(R.string.main_overview_smartwatch_description));
-            holder.text3.setText(String.valueOf(ListenerService.getNumberOfDevices()));
+            //holder.text3.setText(String.valueOf(ListenerService.getNumberOfDevices()));
         }
 
         return rowView;

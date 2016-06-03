@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import de.unima.ar.collector.R;
 import de.unima.ar.collector.SensorDataCollectorService;
-import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.BroadcastService;
 import de.unima.ar.collector.database.DatabaseExportSQL;
 import de.unima.ar.collector.sensors.CustomCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
@@ -84,14 +84,14 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
             case "watch_collect":
                 boolean oldState = Settings.WEARSENSOR;
                 Settings.WEARSENSOR = sharedPreferences.getBoolean(key, true);
-                BroadcastService.getInstance().sendMessage("/settings", "[WEARSENSOR, " + sharedPreferences.getBoolean(key, true) + "]");
+                //BroadcastService.getInstance().sendMessage("/settings", "[WEARSENSOR, " + sharedPreferences.getBoolean(key, true) + "]");
                 if(!oldState) {
                     Toast.makeText(this, R.string.preferences_watch_sensorenabled_hint, Toast.LENGTH_LONG).show();
                 }
                 break;
             case "watch_direct":
                 Settings.WEARTRANSFERDIRECT = sharedPreferences.getBoolean(key, false);
-                BroadcastService.getInstance().sendMessage("/settings", "[WEARTRANSFERDIRECT, " + sharedPreferences.getBoolean(key, false) + "]");
+                //BroadcastService.getInstance().sendMessage("/settings", "[WEARTRANSFERDIRECT, " + sharedPreferences.getBoolean(key, false) + "]");
                 break;
             case "sensor_lowpass":
                 Settings.ACCLOWPASS = sharedPreferences.getBoolean(key, false);

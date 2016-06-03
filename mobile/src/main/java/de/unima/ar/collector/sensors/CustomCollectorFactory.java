@@ -21,8 +21,8 @@ public class CustomCollectorFactory
         switch(sensorType) {
             case "TYPE_MICROPHONE":
                 return new MicrophoneCollector();
-            case "TYPE_GPS":
-                return new GPSCollector(context);
+            //case "TYPE_GPS":
+            //    return new GPSCollector(context);
         }
 
         return null;

@@ -21,7 +21,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import de.unima.ar.collector.R;
-import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.BroadcastService;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.shared.Settings;
@@ -187,7 +187,7 @@ public class SelectActivityDialog extends DialogFragment
                 newValues.put("endtime", 0);
 
                 SQLDBController.getInstance().insert(SQLTableName.ACTIVITYDATA, null, newValues);
-                BroadcastService.getInstance().sendMessage("/database/response/currentActivity", text1);
+                //BroadcastService.getInstance().sendMessage("/database/response/currentActivity", text1);
             }
         });
         builder.setNegativeButton(R.string.activity_dialog_cancel, new DialogInterface.OnClickListener()

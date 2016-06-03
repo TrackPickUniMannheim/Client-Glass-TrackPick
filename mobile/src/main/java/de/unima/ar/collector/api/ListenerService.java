@@ -1,5 +1,5 @@
 package de.unima.ar.collector.api;
-
+/*
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.common.collect.BiMap;
@@ -101,4 +101,4 @@ public class ListenerService extends WearableListenerService
 
         super.onMessageReceived(messageEvent);
     }
-}
+}*/

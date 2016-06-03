@@ -7,9 +7,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.google.android.gms.wearable.WearableListenerService;
+//import com.google.android.gms.wearable.WearableListenerService;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,7 +40,8 @@ import de.unima.ar.collector.util.StringUtils;
 
 public class Tasks
 {
-    protected static void informThatWearableHasStarted(byte[] rawData, WearableListenerService wls)
+    //protected static void informThatWearableHasStarted(byte[] rawData, WearableListenerService wls)
+    /*protected static void informThatWearableHasStarted(byte[] rawData, Object wls)
     {
         String data = StringUtils.convertByteArrayToString(rawData);
         if(data == null) {
@@ -51,11 +53,14 @@ public class Tasks
         String deviceID = tmp[0];
         String deviceAddress = tmp[1];
 
-        if(ListenerService.getDevices().contains(deviceID)) {
+
+
+        //if(ListenerService.getDevices().contains(deviceID)) {
+        if(new HashSet<String>().contains(deviceID)) {
             return;
         }
 
-        ListenerService.addDevice(deviceID, deviceAddress);
+        //ListenerService.addDevice(deviceID, deviceAddress);
 
         // send settings
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(wls);
@@ -65,9 +70,9 @@ public class Tasks
         // main activity started?
         MainActivity activity = (MainActivity) ActivityController.getInstance().get("MainActivity");
         if(activity == null) {
-            Intent intent = new Intent(wls, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            wls.startActivity(intent);
+            //Intent intent = new Intent(wls, MainActivity.class);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //wls.startActivity(intent);
 
             return;
         }
@@ -84,14 +89,14 @@ public class Tasks
         // inform mobile device
         Toast toast = Toast.makeText(activity, activity.getString(R.string.listener_app_connected), Toast.LENGTH_SHORT);
         toast.show();
-    }
+    }*/
 
 
-    protected static void informThatWearableHasDestroyed(byte[] rawData)
+    /*protected static void informThatWearableHasDestroyed(byte[] rawData)
     {
         // unregister device
         String deviceID = StringUtils.convertByteArrayToString(rawData);
-        ListenerService.rmDevice(deviceID);
+        //ListenerService.rmDevice(deviceID);
 
         // refresh overview
         MainActivity activity = (MainActivity) ActivityController.getInstance().get("MainActivity");
@@ -102,7 +107,7 @@ public class Tasks
             Toast toast = Toast.makeText(activity, activity.getString(R.string.listener_app_disconnected), Toast.LENGTH_SHORT);
             toast.show();
         }
-    }
+    }*/
 
 
     protected static void updatePostureValue(byte[] rawData)
@@ -241,7 +246,7 @@ public class Tasks
                 sb = sb.delete(sb.length() - ("\n").length(), sb.length());
             }
 
-            BroadcastService.getInstance().sendMessage("/database/response/" + key, sb.toString());
+            //BroadcastService.getInstance().sendMessage("/database/response/" + key, sb.toString());
         } catch(Exception e) {
             e.printStackTrace();
 
@@ -319,7 +324,7 @@ public class Tasks
 
     protected static void processIncomingSensorBlob(String path, byte[] rawData)
     {
-        BroadcastService.getInstance().sendMessage("/sensor/blob/confirm/" + Arrays.hashCode(rawData), "");
+        //BroadcastService.getInstance().sendMessage("/sensor/blob/confirm/" + Arrays.hashCode(rawData), "");
 
         Object object = Utils.compressedByteArrayToObject(rawData);
         if(object == null || !(object instanceof List<?>) || ((List<?>) object).size() <= 1) {

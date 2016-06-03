@@ -13,16 +13,18 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.widget.Toast;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.unima.ar.collector.api.BroadcastService;
-import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.shared.util.DeviceID;
 
 
 /**
@@ -109,11 +111,17 @@ public class SensorDataCollectorService extends Service
         registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 
         // refresh/update DB
-        Set<String> devices = ListenerService.getDevices();
+        //Set<String> devices = ListenerService.getDevices();
+        Set<String> devices = new HashSet<String>();
         for(String device : devices) {
             DatabaseHelper.createDeviceDependentTables(device);
             SQLDBController.getInstance().registerDevice(device);
         }
+
+        // Workaround for usage without wearable support.
+
+        DatabaseHelper.createDeviceDependentTables(DeviceID.get(this));
+        SQLDBController.getInstance().registerDevice(DeviceID.get(this));
 
         PowerManager manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         this.mWakeLock = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SensorCollectorManager");
@@ -128,7 +136,7 @@ public class SensorDataCollectorService extends Service
                 if(!scm.enableCollectors(sensorID)) {
                     continue;
                 } else if(sensorID > 0 && Settings.WEARSENSOR) {
-                    BroadcastService.getInstance().sendMessage("/sensor/register", "[" + sensorID + ", " + scm.getSensorCollectors().get(sensorID).getSensorRate() + "]");
+                    //BroadcastService.getInstance().sendMessage("/sensor/register", "[" + sensorID + ", " + scm.getSensorCollectors().get(sensorID).getSensorRate() + "]");
                 }
                 cou++;
             } catch(Exception e) {

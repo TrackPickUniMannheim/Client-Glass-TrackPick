@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.unima.ar.collector.R;
-import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.BroadcastService;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.shared.Settings;
@@ -123,7 +123,7 @@ public class ActivityListRowAdapter extends ArrayAdapter<String>
                     // Remove from UI
                     that.remove(itemText);
                     that.notifyDataSetChanged();
-                    BroadcastService.getInstance().sendMessage("/database/response/deleteActivity", itemText);
+                    //BroadcastService.getInstance().sendMessage("/database/response/deleteActivity", itemText);
                 }
             });
         }

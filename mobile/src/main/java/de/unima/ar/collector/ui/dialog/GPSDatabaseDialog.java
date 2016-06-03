@@ -1,5 +1,5 @@
 package de.unima.ar.collector.ui.dialog;
-
+/*
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,6 +30,7 @@ import de.unima.ar.collector.ui.TimePickerListener;
 /**
  * @author Fabian Kramm
  */
+/*
 @SuppressLint("SimpleDateFormat")
 public class GPSDatabaseDialog extends DialogFragment
 {
@@ -46,6 +47,7 @@ public class GPSDatabaseDialog extends DialogFragment
      * (non-Javadoc)
      * @see android.support.v4.app.DialogFragment#onCreateDialog(android.os.Bundle)
      */
+/*
     @SuppressLint("SimpleDateFormat")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
@@ -154,8 +156,8 @@ public class GPSDatabaseDialog extends DialogFragment
                          * mainHandler.post(myRunnable);
                          */
 
-                        context.showAnalyzeDatabaseGPS(lFromTime + "", lToTime + "");
-                        d.dismiss();
+                        //context.showAnalyzeDatabaseGPS(lFromTime + "", lToTime + "");
+/*                        d.dismiss();
                     }
                 });
 
@@ -164,4 +166,4 @@ public class GPSDatabaseDialog extends DialogFragment
 
         return d;
     }
-}
+}*/

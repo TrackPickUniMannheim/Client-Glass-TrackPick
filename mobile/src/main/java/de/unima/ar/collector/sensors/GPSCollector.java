@@ -15,12 +15,12 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+/*import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MarkerOptions; */
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +43,7 @@ import de.unima.ar.collector.util.PlotConfiguration;
 /**
  * @author Timo Sztyler, Fabian Kramm
  */
+/*
 public class GPSCollector extends CustomCollector implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
     private static final int      type       = -3;
@@ -52,7 +53,7 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
     private LocationManager       locationManager;
     private Location              lastKnownLocation;
     private Set<LocationListener> locationListeners;
-    private GoogleMap             map;
+    //private GoogleMap             map;
     private Timer                 timer;
     private GoogleApiClient       mGoogleApiClient;
 
@@ -60,7 +61,7 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
     private Location lastKnownGPSLocation = null; // workaround
     private boolean  CameraMoved          = false;    // TODO?
 
-    private static Marker myPositionMarker;
+    //private static Marker myPositionMarker;
     private static Map<String, Plotter> plotters = new HashMap<>();
 
 
@@ -82,13 +83,13 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
         }
 
         // check if google play services are installed
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this.context);
+        /*int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this.context);
         if(status == ConnectionResult.SUCCESS) {
             this.mGoogleApiClient = new GoogleApiClient.Builder(this.context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
-        }
+        } */
 
         // backup
-        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    /*    this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
 
@@ -102,7 +103,7 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
         }
 
         this.timer = new Timer();
-        this.timer.scheduleAtFixedRate(new TimerTask()
+        /*this.timer.scheduleAtFixedRate(new TimerTask()
         {
             @Override
             public void run()
@@ -123,8 +124,8 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
                     doLocationUpdate(lastKnownLocation);
                 }
             }
-        }, 0, getSensorRate());
-    }
+        }, 0, getSensorRate()); */
+/*    }
 
 
     private void searchLocationWithoutGoogleService()
@@ -374,4 +375,4 @@ public class GPSCollector extends CustomCollector implements GoogleApiClient.Con
     {
         searchLocationWithoutGoogleService();
     }
-}
+} */

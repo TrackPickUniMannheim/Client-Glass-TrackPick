@@ -17,7 +17,7 @@ import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.sensors.AccelerometerSensorCollector;
 import de.unima.ar.collector.sensors.AmbientTemperatureSensorCollector;
-import de.unima.ar.collector.sensors.GPSCollector;
+//import de.unima.ar.collector.sensors.GPSCollector;
 import de.unima.ar.collector.sensors.GravitySensorCollector;
 import de.unima.ar.collector.sensors.GyroscopeSensorCollector;
 import de.unima.ar.collector.sensors.LightSensorCollector;
@@ -121,7 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         AccelerometerSensorCollector.createDBStorage(deviceID);
         AmbientTemperatureSensorCollector.createDBStorage(deviceID);
-        GPSCollector.createDBStorage(deviceID);
+        //GPSCollector.createDBStorage(deviceID);
         GravitySensorCollector.createDBStorage(deviceID);
         GyroscopeSensorCollector.createDBStorage(deviceID);
         LightSensorCollector.createDBStorage(deviceID);

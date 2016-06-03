@@ -6,23 +6,25 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.Node;
+/*import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.Wearable;
+import com.google.android.gms.wearable.Wearable; */
 
 import de.unima.ar.collector.shared.util.Utils;
 
+/*
 public class BroadcastService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
     private static BroadcastService SERVICE = null;
-    private static GoogleApiClient  gac     = null;
+    //private static GoogleApiClient  gac     = null;
 
     private static final String LOG_TAG = "BROADCASTMOBILE";
 
 
     private BroadcastService(Context context)
     {
-        gac = new GoogleApiClient.Builder(context).addApi(Wearable.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
+        //gac = new GoogleApiClient.Builder(context).addApi(Wearable.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
+        //gac = new GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
     }
 
 
@@ -54,7 +56,8 @@ public class BroadcastService implements GoogleApiClient.ConnectionCallbacks, Go
 
     public void sendMessage(final String path, final String text)
     {
-        new Thread(new Runnable()
+        System.out.print("Nothing");
+        /*new Thread(new Runnable()
         {
             @Override
             public void run()
@@ -69,8 +72,8 @@ public class BroadcastService implements GoogleApiClient.ConnectionCallbacks, Go
                     Wearable.MessageApi.sendMessage(gac, node.getId(), path, text.getBytes()).await();
                 }
             }
-        }).start();
-    }
+        }).start(); */
+/*    }
 
 
     @Override
@@ -92,4 +95,4 @@ public class BroadcastService implements GoogleApiClient.ConnectionCallbacks, Go
     {
         Log.d(LOG_TAG, "Failed!");
     }
-}
+}*/
