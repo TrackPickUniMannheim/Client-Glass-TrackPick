@@ -40,7 +40,7 @@ public class Utils
     }
 
 
-    public static void makeToast(final Activity activity, final int message, final int duration)
+    public static void makeToast(final Activity activity, final String message, final int duration)
     {
         activity.runOnUiThread(new Runnable()
         {

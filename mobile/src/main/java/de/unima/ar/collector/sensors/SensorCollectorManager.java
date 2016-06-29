@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import de.unima.ar.collector.controller.ActivityController;
+import de.unima.ar.collector.shared.util.Utils;
 
 
 /**
@@ -179,6 +183,7 @@ public class SensorCollectorManager
         }
 
         if(sel.getSensor() != null) {
+            //Utils.makeToast(ActivityController.getInstance().get("MainActivity"), "Sensorrate " + sel.getType() + " set to " + sel.getSensorRate(), Toast.LENGTH_LONG);
             this.sensorManager.registerListener(sel, sel.getSensor(), sel.getSensorRate());
             sel.isRegistered = true;
         } else {    // Fall 2: Es gibt einen Default Sensor für den Sensortyp

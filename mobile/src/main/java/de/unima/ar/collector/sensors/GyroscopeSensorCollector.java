@@ -30,6 +30,7 @@ public class GyroscopeSensorCollector extends SensorCollector
     private static Map<String, Plotter>        plotters = new HashMap<>();
     private static Map<String, List<String[]>> cache    = new HashMap<>();
 
+    private static int idx = 0;
 
     public GyroscopeSensorCollector(Sensor sensor)
     {
@@ -129,17 +130,26 @@ public class GyroscopeSensorCollector extends SensorCollector
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
     {
-        String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.GYROSCOPE;
 
-        if(Settings.DATABASE_DIRECT_INSERT) {
-            SQLDBController.getInstance().insert(tableName, null, newValues);
-            return;
-        }
+        if (idx % 8 == 0)  {
+            final String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.GYROSCOPE;
 
-        List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, (Settings.DATABASE_CACHE_SIZE + type * 200));
-        if(clone != null) {
-            SQLDBController.getInstance().bulkInsert(tableName, clone);
+            if(Settings.DATABASE_DIRECT_INSERT) {
+                SQLDBController.getInstance().insert(tableName, null, newValues);
+                return;
+            }
+
+            final List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, (Settings.DATABASE_CACHE_SIZE + type * 200));
+
+            new Thread(new Runnable() {
+                public void run() {
+                    if(clone != null) {
+                        SQLDBController.getInstance().bulkInsert(tableName, clone);
+                    }
+                }
+            }).start();
         }
+        idx++;
     }
 
 

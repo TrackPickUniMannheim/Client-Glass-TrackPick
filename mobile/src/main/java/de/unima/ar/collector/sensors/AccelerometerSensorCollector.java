@@ -2,11 +2,20 @@ package de.unima.ar.collector.sensors;
 
 import android.content.ContentValues;
 import android.hardware.Sensor;
+import android.media.MediaScannerConnection;
+import android.os.AsyncTask;
+import android.os.Environment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.unima.ar.collector.SensorDataCollectorService;
 import de.unima.ar.collector.controller.SQLDBController;
@@ -30,6 +39,8 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     private static Map<String, Plotter>        plotters = new HashMap<>();
     private static Map<String, List<String[]>> cache    = new HashMap<>();
+    private static Set<String> times = new HashSet<String>();
+    private static int idx = 1;
 
 
     public AccelerometerSensorCollector(Sensor sensor)
@@ -76,7 +87,7 @@ public class AccelerometerSensorCollector extends SensorCollector
 
         String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
         AccelerometerSensorCollector.writeDBStorage(deviceID, newValues);
-        AccelerometerSensorCollector.updateLivePlotter(deviceID, new float[]{ x, y, z });
+        //AccelerometerSensorCollector.updateLivePlotter(deviceID, new float[]{ x, y, z });
     }
 
 
@@ -144,19 +155,42 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
     {
-        String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.ACCELEROMETER;
+        /*times.add(String.valueOf(newValues.get("attr_time")));
+        if(times.size() > 15000) {
+            long stamp = System.currentTimeMillis();
+            File f = new File( Environment.getExternalStorageDirectory() + "/SensorDataCollector", String.valueOf(stamp) + "_acc.txt");
+            try {
+                PrintWriter pw = new PrintWriter(f);
+                for(String s:times) {
+                    pw.write(s + "\n");
+                }
+                pw.flush();
+                pw.close();
+                //MediaScannerConnection.scanFile();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            times.clear();
+        } */
+        if (idx % 4 == 0) {
+            final String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.ACCELEROMETER;
 
-        if(Settings.DATABASE_DIRECT_INSERT) {
-            SQLDBController.getInstance().insert(tableName, null, newValues);
-            return;
-        }
+            if(Settings.DATABASE_DIRECT_INSERT) {
+                SQLDBController.getInstance().insert(tableName, null, newValues);
+                return;
+            }
 
-        List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, (Settings.DATABASE_CACHE_SIZE + type * 200));
-        if(clone != null) {
-            SQLDBController.getInstance().bulkInsert(tableName, clone);
+            final List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, (Settings.DATABASE_CACHE_SIZE + type * 200));
+            new Thread(new Runnable() {
+                public void run() {
+                    if(clone != null) {
+                        SQLDBController.getInstance().bulkInsert(tableName, clone);
+                    }
+                }
+            }).start();
         }
+        idx ++;
     }
-
 
     public static void flushDBCache(String deviceID)
     {

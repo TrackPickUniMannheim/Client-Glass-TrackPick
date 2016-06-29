@@ -7,6 +7,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -18,9 +19,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 
 import de.unima.ar.collector.R;
+import de.unima.ar.collector.SensorDataCollectorService;
 import de.unima.ar.collector.controller.SQLDBController;
+import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.shared.util.DeviceID;
 import de.unima.ar.collector.util.UIUtils;
 
 public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implements MediaScannerConnection.OnScanCompletedListener
@@ -66,6 +72,17 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
         File target = new File(root, "db" + System.currentTimeMillis() + ".sqlite");
         boolean success = writeDataToDisk(source, target);
 
+        String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
+        String sqlTable = "SELECT * FROM " + SQLTableName.PREFIX + deviceID + SQLTableName.VIDEO + ";";
+        List<String[]> resultSQL = SQLDBController.getInstance().query(sqlTable, null, false);
+
+        for (String[] row: resultSQL) {
+            Log.i("VIDEO_DATABASE", Arrays.toString(row));
+            File video = new File(root, row[2] + ".mp4");
+            writeDataToDisk(new File(row[1]), video);
+            MediaScannerConnection.scanFile(context, new String[]{ video.getAbsolutePath() }, null, this);
+        }
+
         if(!success) {
             return false;
         }
@@ -96,15 +113,18 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
 
     private boolean writeDataToDisk(File source, File target)
     {
+        Log.i("FILE_WRITE_SOURCE", source.getAbsolutePath());
+        Log.i("FILE_WRITE_TARGET", target.getAbsolutePath());
         try {
             boolean success = target.createNewFile();
 
-            if(!success) {
+            /*if(!success) {
                 UIUtils.makeToast((Activity) context, R.string.option_export_fileexists, Toast.LENGTH_LONG);
                 return false;
-            }
+            } */
         } catch(IOException e1) {
             UIUtils.makeToast((Activity) context, R.string.option_export_couldnotcreatefile, Toast.LENGTH_LONG);
+            Log.w("FILE_WRITE", e1.toString());
             return false;
         }
 

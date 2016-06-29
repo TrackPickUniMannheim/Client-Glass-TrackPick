@@ -3,6 +3,8 @@ package de.unima.ar.collector.util;
 import android.content.ContentValues;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,11 +43,9 @@ public class DBUtils
         return true;
     }
 
-
-    public static List<String[]> manageCache(String deviceID, Map<String, List<String[]>> cache, ContentValues newValues, int cacheSize)
-    {
+    public static List<String[]> manageCache(String deviceID, Map<String, List<String[]>> cache, ContentValues newValues, int cacheSize) {
         if(!cache.containsKey(deviceID)) {
-            cache.put(deviceID, new ArrayList<String[]>());
+            cache.put(deviceID, new LinkedList<String[]>());
 
             Set<String> keys = newValues.keySet();
             String[] header = keys.toArray(new String[keys.size()]);
@@ -68,10 +68,40 @@ public class DBUtils
         if(cache.get(deviceID).size() > cacheSize + 1) {
             cache.put(deviceID, cache.get(deviceID).subList(cacheSize + 1, cache.get(deviceID).size()));
         } else {
-            cache.put(deviceID, new ArrayList<String[]>());
+            cache.put(deviceID, new LinkedList<String[]>());
         }
         cache.get(deviceID).add(0, keys);
 
+        return clone;
+    }
+
+    public static String[][] manageCache(String deviceID, Map<String, String[][]> cache, ContentValues newValues, int cacheSize, int idx)
+    {
+        if(!cache.containsKey(deviceID)) {
+            Set<String> keys = newValues.keySet();
+            cache.put(deviceID, new String[cacheSize][keys.size()]);
+
+            String[] header = keys.toArray(new String[keys.size()]);
+            cache.get(deviceID)[0] = header;
+        }
+
+        String[] keys = cache.get(deviceID)[0];
+        String[] entry = new String[keys.length];
+        for(int i = 0; i < keys.length; i++) {
+            entry[i] = newValues.getAsString(keys[i]);
+        }
+        cache.get(deviceID)[idx] = entry;
+
+        if(cache.get(deviceID).length < cacheSize) {
+            return null;
+        }
+
+        String[][] clone = Arrays.copyOfRange(cache.get(deviceID), 0, cacheSize + 1);
+
+
+        cache.put(deviceID, new String[cacheSize][keys.length]);
+
+        cache.get(deviceID)[0] =  keys;
         return clone;
     }
 
@@ -93,6 +123,23 @@ public class DBUtils
         cache.remove(deviceID);
     }
 
+
+    public static void flushCacheArr(String sqlTableName, Map<String, String[][]> cache, String deviceID)
+    {
+        if(cache.keySet().size() == 0) {
+            return;
+        }
+
+        String[][] values = cache.get(deviceID);
+        if(values.length <= 1) {
+            return;
+        }
+
+        String tableName = SQLTableName.PREFIX + deviceID + sqlTableName;
+        SQLDBController.getInstance().bulkInsertArr(tableName, values);
+
+        cache.remove(deviceID);
+    }
 
     public static void updateSensorStatus(int type, int frequency, int enabled)
     {

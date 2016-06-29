@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -271,6 +272,8 @@ public class SensorenRowAdapter extends ArrayAdapter<String>
                             try {
                                 double frequencyNew = Double.parseDouble(input.getText().toString());
                                 DBUtils.updateSensorStatus(sensor.getType(), (int) frequencyNew, 0);
+
+                                Log.i("FREQ_SET","Frequency set was: " + frequencyNew);
 
                                 SensorCollector sc = SensorDataCollectorService.getInstance().getSCM().getSensorCollectors().get(sensor.getType());
                                 sc.setSensorRate(frequencyNew);

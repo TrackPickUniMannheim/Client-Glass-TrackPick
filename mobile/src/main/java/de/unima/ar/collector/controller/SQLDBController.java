@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.unima.ar.collector.SensorDataCollectorService;
@@ -125,6 +126,44 @@ public class SQLDBController
             String[] value = values.get(i);
 
             for(int j = 1; j <= value.length; j++) {
+                insert.bindString(j, value[j - 1]);
+            }
+            result = insert.executeInsert();
+        }
+        database.setTransactionSuccessful();
+        database.endTransaction();
+
+        return result;
+    }
+
+    public long bulkInsertArr(String table, String[][] values)
+    {
+        long result = -1;
+
+        if(values.length == 0) {
+            return result;
+        }
+
+        String sql = "INSERT OR IGNORE INTO " + table + " (";
+        String qMarks = "";
+        for(String name : values[0]) {
+            sql += name + ",";
+            qMarks += "?,";
+        }
+
+        sql = sql.substring(0, sql.length() - 1);
+        sql += ") values (" + qMarks.substring(0, qMarks.length() - 1) + ");";
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        database.beginTransaction();
+        SQLiteStatement insert = database.compileStatement(sql);
+        for(int i = 1; i < values.length; i++) {
+            String[] value = values[i];
+            if (value[0] == null) {
+                break;
+            }
+            for(int j = 1; j <= value.length; j++) {
+                //Log.i("DB_INFO", Arrays.toString(value));
                 insert.bindString(j, value[j - 1]);
             }
             result = insert.executeInsert();

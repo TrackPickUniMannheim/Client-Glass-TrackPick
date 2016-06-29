@@ -31,6 +31,7 @@ import de.unima.ar.collector.sensors.RelativeHumiditySensorCollector;
 import de.unima.ar.collector.sensors.RotationVectorSensorCollector;
 import de.unima.ar.collector.sensors.StepCounterSensorCollector;
 import de.unima.ar.collector.sensors.StepDetectorSensorCollector;
+import de.unima.ar.collector.sensors.VideoCollector;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.util.UIUtils;
 
@@ -128,6 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         LinearAccelerationSensorCollector.createDBStorage(deviceID);
         MagneticFieldSensorCollector.createDBStorage(deviceID);
         MicrophoneCollector.createDBStorage(deviceID);
+        VideoCollector.createDBStorage(deviceID);
         OrientationSensorCollector.createDBStorage(deviceID);
         PressureSensorCollector.createDBStorage(deviceID);
         ProximitySensorCollector.createDBStorage(deviceID);
