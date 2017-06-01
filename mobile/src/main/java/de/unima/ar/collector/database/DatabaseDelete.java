@@ -2,14 +2,24 @@ package de.unima.ar.collector.database;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import de.unima.ar.collector.R;
+import de.unima.ar.collector.SensorDataCollectorService;
 import de.unima.ar.collector.controller.SQLDBController;
+import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.shared.util.DeviceID;
 import de.unima.ar.collector.util.UIUtils;
 
 public class DatabaseDelete extends AsyncTask<String, Void, Boolean>
@@ -33,7 +43,19 @@ public class DatabaseDelete extends AsyncTask<String, Void, Boolean>
     @Override
     protected Boolean doInBackground(String... params)
     {
-        return SQLDBController.getInstance().deleteDatabase();
+        String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
+        String sqlTable = "SELECT * FROM " + SQLTableName.PREFIX + deviceID + SQLTableName.VIDEO + ";";
+        List<String[]> resultSQL = SQLDBController.getInstance().query(sqlTable, null, false);
+
+        boolean deleteVideo = true;
+
+        for (String[] row: resultSQL) {
+            Log.i("VIDEO_DATABASE_DELETE", Arrays.toString(row));
+            File video = new File(row[1]);
+            deleteVideo = deleteVideo && video.delete();
+        }
+
+        return SQLDBController.getInstance().deleteDatabase() && deleteVideo;
     }
 
 

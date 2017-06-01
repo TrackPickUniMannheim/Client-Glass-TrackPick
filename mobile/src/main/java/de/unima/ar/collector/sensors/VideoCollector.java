@@ -19,7 +19,7 @@ import de.unima.ar.collector.shared.util.DeviceID;
 /**
  * Created by Alexander Diete on 03.06.16.
  */
-public class VideoCollector extends CustomCollector {
+public class  VideoCollector extends CustomCollector {
 
     private static final int      type        = -4;
     private static final String[] valueNames  = new String[]{ "attr_db", "attr_time" };

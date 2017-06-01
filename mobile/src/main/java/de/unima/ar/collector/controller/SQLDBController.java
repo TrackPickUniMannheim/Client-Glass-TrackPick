@@ -253,6 +253,8 @@ public class SQLDBController
         synchronized(databaseLock) {
             SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
+
+
             for(SensorCollector entry : SensorDataCollectorService.getInstance().getSCM().getSensorCollectors().values()) {
                 if(entry.isRegistered) {
                     return false;
