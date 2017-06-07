@@ -27,6 +27,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -79,6 +80,8 @@ import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.AdapterController;
 import de.unima.ar.collector.controller.BluetoothController;
 import de.unima.ar.collector.controller.SQLDBController;
+import de.unima.ar.collector.database.DatabaseDelete;
+import de.unima.ar.collector.database.DatabaseExportSQL;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.extended.SensorSelfTest;
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity
     private final static ArrayList<ScreenInfo> lastScreens = new ArrayList<>();
 
     private View              GPSView;
+    private boolean           glassRecordFlag = false;
     //private ArrayList<Marker> positionMarkers;
    // private Polyline          polyline;
 
@@ -239,6 +243,16 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
+    public boolean onKeyUp(int code, KeyEvent event) {
+        if (code == 82) {
+            this.recordSimulaniously();
+        } else {
+            super.onKeyUp(code, event);
+        }
+        return true;
+    }
+
+    @Override
     public void onBackPressed()
     {
         if(lastScreens.size() <= 1) {
@@ -295,6 +309,70 @@ public class MainActivity extends AppCompatActivity
             default:
                 showSensoren();
         }
+    }
+
+    // TODO: Write DB
+    public void recordSimulaniously() {
+        SensorDataCollectorService service = SensorDataCollectorService.getInstance();
+        int[] sensors = {
+                SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
+                SensorDataUtil.getSensorTypeInt("TYPE_ACCELEROMETER"),
+                SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
+                SensorDataUtil.getSensorTypeInt("TYPE_MAGNETIC_FIELD")
+        };
+        if (this.glassRecordFlag) {
+            Toast.makeText(getBaseContext(), "Stopping recording", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getBaseContext(), "Starting recording", Toast.LENGTH_LONG).show();
+        }
+        for (int id: sensors) {
+            if(id < -1) {
+                CustomCollector cc = service.getSCM().getCustomCollectors().get(id);
+                if(this.glassRecordFlag) {
+                    if(!service.getSCM().unregisterCustomCollector(id)) {
+                        Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
+                    } else {
+                        service.getSCM().disableCollectors(id);
+                        DBUtils.updateSensorStatus(id, (int) cc.getSensorRate(), 0);
+                    }
+                } else {
+                    if(!service.getSCM().enableCollectors(id)) {
+                        Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_custom_notify), Toast.LENGTH_LONG).show();
+                    } else {
+                        service.getSCM().registerCustomCollectors();
+                        DBUtils.updateSensorStatus(id, (int) cc.getSensorRate(), 1);
+                    }
+                }
+            }
+            else {
+                // Flag if sensors are recording
+                SensorCollector sc = service.getSCM().getSensorCollectors().get(id);
+                if (this.glassRecordFlag) {
+                    if(!service.getSCM().removeSensor("", id)) {
+                        Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
+                    } else {
+                        DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
+                        SensorDataUtil.flushSensorDataCache(id, DeviceID.get(MainActivity.this));
+                    }
+                }
+                else {
+                    if(!service.getSCM().enableCollectors(id)) {
+                        Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
+                    } else {
+                        DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
+                        service.getSCM().registerSensorCollector(id);
+                    }
+                }
+            }
+        }
+
+        if (this.glassRecordFlag) {
+            DatabaseDelete deleteTask = new DatabaseDelete(this, true);
+            DatabaseExportSQL task = new DatabaseExportSQL(this, deleteTask);
+            task.execute();
+        }
+
+        this.glassRecordFlag = !this.glassRecordFlag;
     }
 
 

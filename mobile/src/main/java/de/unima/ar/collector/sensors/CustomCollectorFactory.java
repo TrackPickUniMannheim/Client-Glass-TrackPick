@@ -22,7 +22,7 @@ public class CustomCollectorFactory
             case "TYPE_MICROPHONE":
                 return new MicrophoneCollector();
             case "TYPE_VIDEO":
-                return new VideoCollector(context);
+                return new VideoCollector();
         }
 
         return null;

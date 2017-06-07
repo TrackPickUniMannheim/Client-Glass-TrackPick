@@ -25,11 +25,17 @@ import de.unima.ar.collector.util.UIUtils;
 public class DatabaseDelete extends AsyncTask<String, Void, Boolean>
 {
     private Context context;
+    private boolean isGlass = false;
 
 
-    public DatabaseDelete(Context context)
-    {
+    public DatabaseDelete(Context context) {
         this.context = context;
+        this.isGlass = false;
+    }
+
+    public DatabaseDelete(Context context, boolean isGlass) {
+        this.context = context;
+        this.isGlass = isGlass;
     }
 
 
@@ -74,30 +80,34 @@ public class DatabaseDelete extends AsyncTask<String, Void, Boolean>
 
     private void showProgressBar()
     {
-        ((Activity) context).runOnUiThread(new Runnable()
-        {
-            public void run()
+        if(!isGlass) {
+            ((Activity) context).runOnUiThread(new Runnable()
             {
-                ((Activity) context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                public void run()
+                {
+                    ((Activity) context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-                FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
-                progressBarHolder.setVisibility(View.VISIBLE);
-            }
-        });
+                    FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
+                    progressBarHolder.setVisibility(View.VISIBLE);
+               }
+            });
+        }
     }
 
 
     private void hideProgressBar()
     {
-        ((Activity) context).runOnUiThread(new Runnable()
-        {
-            public void run()
+        if(!isGlass) {
+            ((Activity) context).runOnUiThread(new Runnable()
             {
-                ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                public void run()
+                {
+                    ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-                FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
-                progressBarHolder.setVisibility(View.GONE);
-            }
-        });
+                    FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
+                    progressBarHolder.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 }

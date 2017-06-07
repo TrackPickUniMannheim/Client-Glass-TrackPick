@@ -1,91 +1,176 @@
 package de.unima.ar.collector.sensors;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.media.MediaRecorder;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
+import android.media.CameraProfile;
+import android.media.MediaRecorder;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.File;
-import java.util.Timer;
 
-import de.unima.ar.collector.SensorDataCollectorService;
+import de.unima.ar.collector.R;
+import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.shared.database.SQLTableName;
-import de.unima.ar.collector.shared.util.DeviceID;
+import de.unima.ar.collector.util.UIUtils;
 
 /**
- * Created by Alexander Diete on 03.06.16.
+ * @author Timo Sztyler
  */
-public class  VideoCollector extends CustomCollector {
+public class VideoCollector extends CustomCollector implements SurfaceHolder.Callback, MediaScannerConnection.OnScanCompletedListener
+{
+    private static final int      type       = -4;
+    private static final String[] valueNames = new String[]{ "attr_video", "attr_time" };
 
-    private static final int      type        = -4;
-    private static final String[] valueNames  = new String[]{ "attr_db", "attr_time" };
-    private static final long     videoLength = 5000;
+    private MediaRecorder recorder = null;
+    private WindowManager windowManager;
+    private SurfaceView   surfaceView;
+    private long          startTime;
+    private String        path;
 
-    private Timer timer;
-    private Context context;
-    private Camera camera;
-    private MediaRecorder recorder;
-    private long currentStamp;
-    private String path;
-
-    public VideoCollector(Context context) {
-        super();
-        this.context = context;
-    }
 
     @Override
-    public void onRegistered() {
-        currentStamp = System.currentTimeMillis();
-        File f = new File(context.getFilesDir(), Long.toString(currentStamp));
-        path = f.getAbsolutePath();
+    public void onRegistered()
+    {
+        this.startTime = System.currentTimeMillis();
+        Activity main = ActivityController.getInstance().get("MainActivity");
 
-        Intent i = new Intent(context, CameraRecordingService.class);
-        i.putExtra("target_video_file", f);
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSLUCENT);
+        layoutParams.gravity = Gravity.START | Gravity.TOP;
 
-        context.startService(i);
+        this.windowManager = (WindowManager) main.getSystemService(Context.WINDOW_SERVICE);
+        this.surfaceView = new SurfaceView(main);
+
+        this.windowManager.addView(this.surfaceView, layoutParams);
+        this.surfaceView.getHolder().addCallback(this);
     }
+
 
     @Override
-    public void onDeRegistered() {
-        context.stopService(new Intent(context, CameraRecordingService.class));
-        ContentValues newValues = new ContentValues();
-        newValues.put(valueNames[0], currentStamp);
-        newValues.put(valueNames[1], path);
-        String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
-        writeDBStorage(deviceID, newValues);
+    public void onDeRegistered()
+    {
+        this.recorder.stop();
+        this.recorder.reset();
+        this.recorder.release();
 
-        for (File f: context.getFilesDir().listFiles()) {
-            Log.i("FILE_INFO", f.getAbsolutePath());
-        }
+        this.windowManager.removeView(this.surfaceView);
+        File extStore = Environment.getExternalStorageDirectory();
+        File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        File video = new File(root.getAbsolutePath(), "video_" + startTime + ".mp4");
+        MediaScannerConnection.scanFile(ActivityController.getInstance().get("MainActivity"), new String[]{ video.getAbsolutePath() }, null, this);
     }
 
-    public long getVideoLength() {
-        return videoLength;
-    }
 
     @Override
-    public int getType() {
+    public int getType()
+    {
         return type;
     }
 
     @Override
-    public Plotter getPlotter(String deviceID) {
+    public void onScanCompleted(String path, Uri pat) {
+        Log.i("Video", "Video scanned");
+    }
+
+
+    @Override
+    public Plotter getPlotter(String deviceID)
+    {
         return null;
     }
 
+
     public static void createDBStorage(String deviceID)
     {
-        String sqlTable = "CREATE TABLE IF NOT EXISTS " + SQLTableName.PREFIX + deviceID + SQLTableName.VIDEO + " (id INTEGER PRIMARY KEY, " + valueNames[1] + " INTEGER, " + valueNames[0] + " STRING)";
+        String sqlTable = "CREATE TABLE IF NOT EXISTS " + SQLTableName.PREFIX + deviceID + SQLTableName.VIDEO + " (id INTEGER PRIMARY KEY, " + valueNames[1] + " INTEGER, " + valueNames[0] + " BLOB)";
         SQLDBController.getInstance().execSQL(sqlTable);
     }
 
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
     {
-        SQLDBController.getInstance().insert(SQLTableName.PREFIX + deviceID + SQLTableName.VIDEO, null, newValues);
+        //String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
+        // TODO
+    }
+
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder)
+    {
+        // init recorder
+        this.recorder = new MediaRecorder();
+        this.recorder.setPreviewDisplay(surfaceHolder.getSurface());
+        this.recorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        this.recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+        this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        this.recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        /*Camera cam = Camera.open(0);
+        Camera.Parameters p = cam.getParameters();
+        int max = 0;
+        Camera.Size maxSize = null;
+        for (Camera.Size s:p.getSupportedPreviewSizes()) {
+            Log.i("Video-Size", "Width: " + s.width + " - Height: " + s.height);
+            if (s.height * s.width > max) {
+                max = s.height * s.width;
+                maxSize = s;
+            }
+        } */
+        //if (maxSize != null) {
+            this.recorder.setVideoSize(1920, 1080);
+        //}
+        //this.recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_1080P));
+        this.recorder.setMaxDuration(0); // 0 seconds = unlimit
+        this.recorder.setMaxFileSize(0); // 0 = unlimit
+
+
+        // set output path
+        File extStore = Environment.getExternalStorageDirectory();
+        File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        boolean result = root.mkdir();
+        if(!result && !root.exists()) {
+            return; // TODO
+        }
+        File output = new File(root.getAbsolutePath(), "video_" + startTime + ".mp4");
+        this.recorder.setOutputFile(output.getAbsolutePath());
+        this.path = output.getAbsolutePath();
+
+        // start
+        try {
+            this.recorder.prepare();
+        } catch(Exception e) {
+            this.recorder.reset();
+            e.printStackTrace();
+        }
+
+        this.recorder.start();
+    }
+
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    {
+        // nothing to do
+    }
+
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        // nothing to do
     }
 }

@@ -32,6 +32,7 @@ import de.unima.ar.collector.util.UIUtils;
 public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implements MediaScannerConnection.OnScanCompletedListener
 {
     private Context context;
+    private AsyncTask<String, Void, Boolean> successfullExecute = null;
 
 
     public DatabaseExportSQL(Context context)
@@ -39,6 +40,11 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
         this.context = context;
     }
 
+    public DatabaseExportSQL(Context context, AsyncTask<String, Void, Boolean> task) {
+        this.context = context;
+        this.successfullExecute = task;
+
+    }
 
     @Override
     protected void onPreExecute()
@@ -108,6 +114,9 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
     {
         hideProgressBar();
         UIUtils.makeToast((Activity) context, R.string.option_export_copysuccessful, Toast.LENGTH_SHORT);
+        if (this.successfullExecute != null) {
+            this.successfullExecute.execute();
+        }
     }
 
 
@@ -157,30 +166,34 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
 
     private void showProgressBar()
     {
-        ((Activity) context).runOnUiThread(new Runnable()
-        {
-            public void run()
+        if (this.successfullExecute == null) {
+            ((Activity) context).runOnUiThread(new Runnable()
             {
-                ((Activity) context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                public void run()
+                {
+                    ((Activity) context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-                FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
-                progressBarHolder.setVisibility(View.VISIBLE);
-            }
-        });
+                    FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
+                    progressBarHolder.setVisibility(View.VISIBLE);
+                }
+            });
+        }
     }
 
 
     private void hideProgressBar()
     {
-        ((Activity) context).runOnUiThread(new Runnable()
-        {
-            public void run()
+        if (this.successfullExecute == null) {
+            ((Activity) context).runOnUiThread(new Runnable()
             {
-                ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                public void run()
+                {
+                    ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-                FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
-                progressBarHolder.setVisibility(View.GONE);
-            }
-        });
+                    FrameLayout progressBarHolder = (FrameLayout) ((Activity) context).findViewById(R.id.progressBarHolder);
+                    progressBarHolder.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 }
