@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setIcon(R.drawable.ic_launcher);
+
         }
     }
 
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyUp(int code, KeyEvent event) {
-        if (code == 82) {
+        if (code == 4) {
             this.recordSimulaniously();
         } else {
             super.onKeyUp(code, event);
@@ -321,8 +322,10 @@ public class MainActivity extends AppCompatActivity
                 SensorDataUtil.getSensorTypeInt("TYPE_MAGNETIC_FIELD")
         };
         if (this.glassRecordFlag) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             Toast.makeText(getBaseContext(), "Stopping recording", Toast.LENGTH_LONG).show();
         } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             Toast.makeText(getBaseContext(), "Starting recording", Toast.LENGTH_LONG).show();
         }
         for (int id: sensors) {

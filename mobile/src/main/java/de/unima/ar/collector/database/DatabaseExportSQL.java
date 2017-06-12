@@ -66,12 +66,23 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
         }
 
         // Unseren eigenen Ordner auf der SD Karte erstellen falls nicht vorhanden
-        File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        File root = new File("/mnt/ext_sdcard");
+        if (!root.exists()) {
+            root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        } else {
+            root = new File(root.getAbsolutePath(), "SensorDataCollector");
+        }
+        boolean result = root.mkdir();
+        if(!result && !root.exists()) {
+            Log.i("Writing_Error", "Could not write");
+            return false; // TODO
+        }
+        /*File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
         boolean result = root.mkdir();
         if(!result && !root.exists()) {
             UIUtils.makeToast((Activity) context, R.string.option_export_couldnotcreatefile, Toast.LENGTH_LONG);
             return false;
-        }
+        } */
 
         // write data
         File source = new File(SQLDBController.getInstance().getPath());

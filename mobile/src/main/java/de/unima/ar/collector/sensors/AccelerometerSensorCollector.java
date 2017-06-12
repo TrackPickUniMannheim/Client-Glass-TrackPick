@@ -172,6 +172,7 @@ public class AccelerometerSensorCollector extends SensorCollector
             }
             times.clear();
         } */
+
         if (idx % 4 == 0) {
             final String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.ACCELEROMETER;
 

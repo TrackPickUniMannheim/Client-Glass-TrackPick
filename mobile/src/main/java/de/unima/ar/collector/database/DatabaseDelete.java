@@ -2,6 +2,7 @@ package de.unima.ar.collector.database;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -73,7 +74,10 @@ public class DatabaseDelete extends AsyncTask<String, Void, Boolean>
         } else {
             UIUtils.makeToast((Activity) context, R.string.option_export_delete_failed1, Toast.LENGTH_LONG);
         }
-
+        if (this.isGlass) {
+            MediaPlayer player = MediaPlayer.create(this.context, R.raw.doorbell);
+            player.start();
+        }
         hideProgressBar();
     }
 

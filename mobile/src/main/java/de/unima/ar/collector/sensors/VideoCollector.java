@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.hardware.Camera;
-import android.media.CamcorderProfile;
-import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -25,6 +22,7 @@ import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.util.FileUtil;
 import de.unima.ar.collector.util.UIUtils;
 
 /**
@@ -48,6 +46,7 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         this.startTime = System.currentTimeMillis();
         Activity main = ActivityController.getInstance().get("MainActivity");
 
+
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSLUCENT);
         layoutParams.gravity = Gravity.START | Gravity.TOP;
 
@@ -68,7 +67,12 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
 
         this.windowManager.removeView(this.surfaceView);
         File extStore = Environment.getExternalStorageDirectory();
-        File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        File root = new File("/mnt/ext_sdcard");
+        if (!root.exists()) {
+            root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        } else {
+            root = new File(root.getAbsolutePath(), "SensorDataCollector");
+        }
         File video = new File(root.getAbsolutePath(), "video_" + startTime + ".mp4");
         MediaScannerConnection.scanFile(ActivityController.getInstance().get("MainActivity"), new String[]{ video.getAbsolutePath() }, null, this);
     }
@@ -119,36 +123,32 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         this.recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        /*Camera cam = Camera.open(0);
-        Camera.Parameters p = cam.getParameters();
-        int max = 0;
-        Camera.Size maxSize = null;
-        for (Camera.Size s:p.getSupportedPreviewSizes()) {
-            Log.i("Video-Size", "Width: " + s.width + " - Height: " + s.height);
-            if (s.height * s.width > max) {
-                max = s.height * s.width;
-                maxSize = s;
-            }
-        } */
-        //if (maxSize != null) {
-            this.recorder.setVideoSize(1920, 1080);
-        //}
-        //this.recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_1080P));
+        this.recorder.setVideoSize(1920, 1080);
         this.recorder.setMaxDuration(0); // 0 seconds = unlimit
         this.recorder.setMaxFileSize(0); // 0 = unlimit
 
 
         // set output path
+        // TODO: External SD card storage & behaviour when card is full
         File extStore = Environment.getExternalStorageDirectory();
-        File root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        File root = new File("/mnt/ext_sdcard");
+        if (!root.exists()) {
+            root = new File(extStore.getAbsolutePath(), "SensorDataCollector");
+        } else {
+            root = new File(root.getAbsolutePath(), "SensorDataCollector");
+        }
         boolean result = root.mkdir();
         if(!result && !root.exists()) {
+            Log.i("Writing_Error", "Could not write");
             return; // TODO
         }
         File output = new File(root.getAbsolutePath(), "video_" + startTime + ".mp4");
         this.recorder.setOutputFile(output.getAbsolutePath());
         this.path = output.getAbsolutePath();
 
+        for(String s: FileUtil.getExternalMounts()) {
+            Log.i("EXTERNAL STORAGE", s);
+        }
         // start
         try {
             this.recorder.prepare();
