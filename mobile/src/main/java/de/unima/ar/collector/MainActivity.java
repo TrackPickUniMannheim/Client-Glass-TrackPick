@@ -85,6 +85,7 @@ import de.unima.ar.collector.database.DatabaseExportSQL;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.extended.SensorSelfTest;
+import de.unima.ar.collector.sensors.AccelerometerSensorCollector;
 import de.unima.ar.collector.sensors.CustomCollector;
 //import de.unima.ar.collector.sensors.GPSCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
@@ -246,6 +247,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onKeyUp(int code, KeyEvent event) {
         if (code == 4) {
+        //if (code == KeyEvent.KEYCODE_VOLUME_DOWN) {
             this.recordSimulaniously();
         } else {
             super.onKeyUp(code, event);
@@ -254,8 +256,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         if(lastScreens.size() <= 1) {
             return;
         }
@@ -316,7 +317,7 @@ public class MainActivity extends AppCompatActivity
     public void recordSimulaniously() {
         SensorDataCollectorService service = SensorDataCollectorService.getInstance();
         int[] sensors = {
-                SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
+                //SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
                 SensorDataUtil.getSensorTypeInt("TYPE_ACCELEROMETER"),
                 SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
                 SensorDataUtil.getSensorTypeInt("TYPE_MAGNETIC_FIELD")
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                     } else {
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
-                        SensorDataUtil.flushSensorDataCache(id, DeviceID.get(MainActivity.this));
+                        SensorDataUtil.flushSensorDataCacheSync(id, DeviceID.get(MainActivity.this));
                     }
                 }
                 else {

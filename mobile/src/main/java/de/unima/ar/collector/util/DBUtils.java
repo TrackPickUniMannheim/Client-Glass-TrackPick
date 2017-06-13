@@ -1,6 +1,7 @@
 package de.unima.ar.collector.util;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.unima.ar.collector.controller.SQLDBController;
+import de.unima.ar.collector.sensors.AccelerometerSensorCollector;
 import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.shared.util.DeviceID;
 
 public class DBUtils
 {
@@ -119,6 +122,7 @@ public class DBUtils
 
         String tableName = SQLTableName.PREFIX + deviceID + sqlTableName;
         SQLDBController.getInstance().bulkInsert(tableName, values);
+        Log.i("CACHE SIZE","Size of accelcache " + cache.get(deviceID).size());
 
         cache.remove(deviceID);
     }

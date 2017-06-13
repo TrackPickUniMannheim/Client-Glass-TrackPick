@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -179,6 +180,7 @@ public class SensorCollectorManager
         SensorCollector sel = this.sensorCollectors.get(type);
 
         if(sel == null || !sel.registerCollector || sel.isRegistered || !enabledCollectors.contains(sel.getType())) {
+            Log.i("CACHE SIZE", "Sensor was null");
             return;
         }
 
@@ -186,12 +188,15 @@ public class SensorCollectorManager
             //Utils.makeToast(ActivityController.getInstance().get("MainActivity"), "Sensorrate " + sel.getType() + " set to " + sel.getSensorRate(), Toast.LENGTH_LONG);
             this.sensorManager.registerListener(sel, sel.getSensor(), sel.getSensorRate());
             sel.isRegistered = true;
+            Log.i("CACHE SIZE", "Sensor was registered");
         } else {    // Fall 2: Es gibt einen Default Sensor für den Sensortyp
             if(this.sensorManager.getDefaultSensor(sel.getType()) != null) {
                 this.sensorManager.registerListener(sel, this.sensorManager.getDefaultSensor(sel.getType()), sel.getSensorRate());
                 sel.isRegistered = true;
+                Log.i("CACHE SIZE", "Sensor was registered with default sensor");
             } else { // Fall 3: Es existiert kein Default Sensor für den Sensortyp
                 // do nothing
+                Log.i("CACHE SIZE", "Sensor was not registered");
             }
         }
     }
