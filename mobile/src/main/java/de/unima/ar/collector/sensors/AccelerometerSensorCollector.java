@@ -39,7 +39,7 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     private static Map<String, Plotter>        plotters = new HashMap<>();
     private static Map<String, List<String[]>> cache    = new HashMap<>();
-    private static Set<String> times = new HashSet<String>();
+    //private static Set<String> times = new HashSet<String>();
     private static int idx = 1;
 
 
@@ -196,5 +196,9 @@ public class AccelerometerSensorCollector extends SensorCollector
     public static void flushDBCache(String deviceID)
     {
         DBUtils.flushCache(SQLTableName.ACCELEROMETER, cache, deviceID);
+    }
+
+    public void clearCache(String id) {
+        cache.remove(id);
     }
 }

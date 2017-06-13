@@ -15,6 +15,7 @@ import java.util.Set;
 
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.shared.util.Utils;
+import de.unima.ar.collector.util.SensorDataUtil;
 
 
 /**
@@ -67,6 +68,9 @@ public class SensorCollectorManager
         return enabledCollectors.size();
     }
 
+    public void clearCache(int id, String deviceID) {
+        this.sensorCollectors.get(id).clearCache(deviceID);
+    }
 
     public float getPowerUsed()
     {
@@ -220,6 +224,7 @@ public class SensorCollectorManager
             }
 
             this.sensorManager.unregisterListener(sel);
+            Log.d("UNREGISTER DEBUG", "Unregistering " + SensorDataUtil.getSensorType(type));
             sel.isRegistered = false;
             return true;
         }

@@ -22,6 +22,7 @@ import android.hardware.Sensor;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -317,7 +318,7 @@ public class MainActivity extends AppCompatActivity
     public void recordSimulaniously() {
         SensorDataCollectorService service = SensorDataCollectorService.getInstance();
         int[] sensors = {
-                //SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
+                SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
                 SensorDataUtil.getSensorTypeInt("TYPE_ACCELEROMETER"),
                 SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
                 SensorDataUtil.getSensorTypeInt("TYPE_MAGNETIC_FIELD")
@@ -360,6 +361,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 else {
+                    service.getSCM().clearCache(id, DeviceID.get(MainActivity.this));
                     if(!service.getSCM().enableCollectors(id)) {
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
                     } else {

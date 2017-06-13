@@ -3,6 +3,7 @@ package de.unima.ar.collector.sensors;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.util.SensorDataUtil;
 
 
 /**
@@ -59,6 +61,7 @@ abstract public class SensorCollector implements SensorEventListener
     {
         float[] clone = se.values.clone();
         long time = System.currentTimeMillis();
+        //Log.d("UNREGISTER DEBUG", "Event " + time);
         SensorChanged(clone, time);
     }
 
@@ -83,6 +86,9 @@ abstract public class SensorCollector implements SensorEventListener
         return (sensor == null) ? null : sensor;
     }
 
+    public void clearCache(String id) {
+        return;
+    }
 
     // Gibt den TYPE des Sensors zurück
     public abstract int getType();
@@ -114,4 +120,5 @@ abstract public class SensorCollector implements SensorEventListener
     {
         throw new IllegalStateException("Method hasn't been set up in the subclass");
     }
+
 }

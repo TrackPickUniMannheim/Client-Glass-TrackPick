@@ -147,4 +147,8 @@ public class MagneticFieldSensorCollector extends SensorCollector
     {
         DBUtils.flushCache(SQLTableName.MAGNETIC, cache, deviceID);
     }
+
+    public void clearCache(String id) {
+        cache.remove(id);
+    }
 }

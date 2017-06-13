@@ -157,4 +157,8 @@ public class GyroscopeSensorCollector extends SensorCollector
     {
         DBUtils.flushCache(SQLTableName.GYROSCOPE, cache, deviceID);
     }
+
+    public void clearCache(String id) {
+        cache.remove(id);
+    }
 }
