@@ -239,6 +239,7 @@
     <string name="option_export_dialog_cancel">Cancel</string>
     <string name="option_export_dialog_ok">Export</string>
     <string name="option_export_nosdcardfound">No SD-Card found!</string>
+    <string name="option_export_file_storing">Video File created!</string>
     <string name="option_export_couldnotcreatefile">Could not create File!</string>
     <string name="option_export_erroropenfile">Error while opening File!</string>
     <string name="option_export_errorwritingfile">Error while writing File!</string>

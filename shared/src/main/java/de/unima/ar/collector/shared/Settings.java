@@ -2,7 +2,7 @@ package de.unima.ar.collector.shared;
 
 public class Settings
 {
-    // This file is modfied on startup by Android! Check xml.preferences.xml!
+    // This file is modified on startup by Android! Check xml.preferences.xml!
 
     public static double  SENSOR_DEFAULT_FREQUENCY = 50.0d;    // Hz
     public static long    GPS_DEFAULT_FREQUENCY    = 10000l; // Milliseconds 600000l = 10min

@@ -95,6 +95,7 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
 
         for (String[] row: resultSQL) {
             Log.i("VIDEO_DATABASE", Arrays.toString(row));
+            UIUtils.makeToast((Activity) context, R.string.option_export_file_storing, Toast.LENGTH_LONG);
             File video = new File(root, row[2] + ".mp4");
             writeDataToDisk(new File(row[1]), video);
             MediaScannerConnection.scanFile(context, new String[]{ video.getAbsolutePath() }, null, this);
@@ -103,6 +104,8 @@ public class DatabaseExportSQL extends AsyncTask<String, Void, Boolean> implemen
         if(!success) {
             return false;
         }
+
+        //TODO: POST Request with Video attached
 
         // make new file discoverable
         MediaScannerConnection.scanFile(context, new String[]{ target.getAbsolutePath() }, null, this);

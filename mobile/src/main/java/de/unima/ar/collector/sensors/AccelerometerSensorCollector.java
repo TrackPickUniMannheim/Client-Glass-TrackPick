@@ -155,24 +155,6 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
     {
-        /*times.add(String.valueOf(newValues.get("attr_time")));
-        if(times.size() > 15000) {
-            long stamp = System.currentTimeMillis();
-            File f = new File( Environment.getExternalStorageDirectory() + "/SensorDataCollector", String.valueOf(stamp) + "_acc.txt");
-            try {
-                PrintWriter pw = new PrintWriter(f);
-                for(String s:times) {
-                    pw.write(s + "\n");
-                }
-                pw.flush();
-                pw.close();
-                //MediaScannerConnection.scanFile();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            times.clear();
-        } */
-
         if (idx % 4 == 0) {
             final String tableName = SQLTableName.PREFIX + deviceID + SQLTableName.ACCELEROMETER;
 

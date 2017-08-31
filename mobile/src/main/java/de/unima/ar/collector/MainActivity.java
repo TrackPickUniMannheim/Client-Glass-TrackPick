@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onKeyUp(int code, KeyEvent event) {
         if (code == 4) {
         //if (code == KeyEvent.KEYCODE_VOLUME_DOWN) {
+
             this.recordSimulaniously();
         } else {
             super.onKeyUp(code, event);

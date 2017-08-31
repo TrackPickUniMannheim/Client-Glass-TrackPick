@@ -1,13 +1,17 @@
 package de.unima.ar.collector.sensors;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
@@ -15,9 +19,18 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import de.unima.ar.collector.R;
+import de.unima.ar.collector.Upload;
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
@@ -39,6 +52,8 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
     private long          startTime;
     private String        path;
 
+    private static String videoURL;
+
 
     @Override
     public void onRegistered()
@@ -55,12 +70,15 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
 
         this.windowManager.addView(this.surfaceView, layoutParams);
         this.surfaceView.getHolder().addCallback(this);
+
+        Log.i("Video", "Video registered");
     }
 
 
     @Override
     public void onDeRegistered()
     {
+
         this.recorder.stop();
         this.recorder.reset();
         this.recorder.release();
@@ -75,7 +93,13 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         }
         File video = new File(root.getAbsolutePath(), "video_" + startTime + ".mp4");
         MediaScannerConnection.scanFile(ActivityController.getInstance().get("MainActivity"), new String[]{ video.getAbsolutePath() }, null, this);
+        Log.i("Video", "Video deregistered and stored to: " + root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
+
+        this.videoURL = (root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
+        uploadVideo();
     }
+
+
 
 
     @Override
@@ -172,5 +196,19 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
     public void surfaceDestroyed(SurfaceHolder holder)
     {
         // nothing to do
+    }
+
+    private void uploadVideo() {
+        class UploadVideo extends AsyncTask<Void, Void, String> {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                Upload u = new Upload();
+                String msg = u.upLoad2Server(VideoCollector.videoURL);
+                return msg;
+            }
+        }
+        UploadVideo uv = new UploadVideo();
+        uv.execute();
     }
 }
