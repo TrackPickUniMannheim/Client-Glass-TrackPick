@@ -204,8 +204,8 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
             @Override
             protected String doInBackground(Void... params) {
                 Upload u = new Upload();
-                String msg = u.upLoad2Server(VideoCollector.videoURL);
-                return msg;
+                u.upload(VideoCollector.videoURL);
+                return null;
             }
         }
         UploadVideo uv = new UploadVideo();

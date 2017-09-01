@@ -12,14 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by Belal on 11/22/2015.
- */
+
 public class Upload {
 
-    private int serverResponseCode;
-
-    public String upLoad2Server(String sourceFileUri) {
+    public void upload(String sourceFileUri) {
 
         String fileName = sourceFileUri;
         HttpURLConnection conn = null;
@@ -33,15 +29,14 @@ public class Upload {
 
         File sourceFile = new File(sourceFileUri);
         if (!sourceFile.isFile()) {
-            Log.e("Huzza", "Source File Does not exist");
-            return null;
+            Log.e("VideoUpload", "Source File not found...");
+            return;
         }
 
         try {
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
             URL url = new URL("https://posttestserver.com/post.php");
             conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.setRequestMethod("POST");
@@ -56,8 +51,6 @@ public class Upload {
             dos.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available();
-            Log.i("Huzza", "Initial .available : " + bytesAvailable);
-
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             buffer = new byte[bufferSize];
 
@@ -73,8 +66,7 @@ public class Upload {
             dos.writeBytes(lineEnd);
             dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
-            serverResponseCode = conn.getResponseCode();
-            Log.i("HTTP-Response",Integer.toString(serverResponseCode));
+            Log.i("HTTP-Response",Integer.toString(conn.getResponseCode()));
             fileInputStream.close();
             dos.flush();
             dos.close();
@@ -82,23 +74,6 @@ public class Upload {
             ex.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (serverResponseCode == 200) {
-            StringBuilder sb = new StringBuilder();
-            try {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn
-                        .getInputStream()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    sb.append(line);
-                }
-                rd.close();
-            } catch (IOException ioex) {
-            }
-            return sb.toString();
-        }else {
-            return "Could not upload";
         }
     }
 }
