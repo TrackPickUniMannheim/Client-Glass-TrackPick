@@ -22,7 +22,7 @@ public class Upload {
         DataOutputStream dos = null;
         String lineEnd = "\r\n";
         String twoHyphens = "--";
-        String boundary = "*****";
+        String boundary = "------------------------aaf9764291ba1fa4";
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
         int maxBufferSize = 1 * 1024 * 1024;
@@ -35,19 +35,22 @@ public class Upload {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            URL url = new URL("https://posttestserver.com/post.php");
+            //URL url = new URL("https://posttestserver.com/post.php");
+            URL url = new URL("http://192.168.43.38:8000/");
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-            conn.setRequestProperty("myFile", fileName);
+            conn.setRequestProperty("SSL_CIPHER", "ECDHE-RSA-AES256-GCM-SHA384");
+            conn.setRequestProperty("Accept-Encoding", "identity");
+            System.setProperty("http.keepAlive", "false");
+            System.setProperty("HTTP_ACCEPT", "*/*");
+            System.setProperty("HTTP_EXPECT", "100-continue");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             dos = new DataOutputStream(conn.getOutputStream());
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"myFile\";filename=\"" + fileName + "\"" + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"" + lineEnd);
             dos.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available();
