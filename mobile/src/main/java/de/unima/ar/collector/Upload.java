@@ -15,9 +15,8 @@ import java.net.URL;
 
 public class Upload {
 
-    public void upload(String sourceFileUri) {
+    public void upload(String fileName, String sourceFileUri) {
 
-        String fileName = sourceFileUri;
         HttpURLConnection conn = null;
         DataOutputStream dos = null;
         String lineEnd = "\r\n";
@@ -36,7 +35,7 @@ public class Upload {
         try {
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
             //URL url = new URL("https://posttestserver.com/post.php");
-            URL url = new URL("http://192.168.43.38:8000/");
+            URL url = new URL("http://192.168.0.129:8000/");
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);

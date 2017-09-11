@@ -1,7 +1,6 @@
 package de.unima.ar.collector.sensors;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -10,33 +9,20 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
-import de.unima.ar.collector.R;
 import de.unima.ar.collector.Upload;
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.util.FileUtil;
-import de.unima.ar.collector.util.UIUtils;
 
 /**
  * @author Timo Sztyler
@@ -52,7 +38,8 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
     private long          startTime;
     private String        path;
 
-    private static String videoURL;
+    private static String videoName;
+    private static String videoUrl;
 
 
     @Override
@@ -95,7 +82,8 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         MediaScannerConnection.scanFile(ActivityController.getInstance().get("MainActivity"), new String[]{ video.getAbsolutePath() }, null, this);
         Log.i("Video", "Video deregistered and stored to: " + root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
 
-        this.videoURL = (root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
+        this.videoName = ("video_" + startTime + ".mp4");
+        this.videoUrl = (root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
         uploadVideo();
     }
 
@@ -204,7 +192,7 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
             @Override
             protected String doInBackground(Void... params) {
                 Upload u = new Upload();
-                u.upload(VideoCollector.videoURL);
+                u.upload(VideoCollector.videoName, VideoCollector.videoUrl);
                 return null;
             }
         }
