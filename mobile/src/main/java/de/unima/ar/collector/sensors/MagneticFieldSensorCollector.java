@@ -2,6 +2,11 @@ package de.unima.ar.collector.sensors;
 
 import android.content.ContentValues;
 import android.hardware.Sensor;
+import android.os.AsyncTask;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.unima.ar.collector.SensorDataCollectorService;
+import de.unima.ar.collector.TCPClient;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.extended.Plotter;
@@ -20,7 +26,7 @@ import de.unima.ar.collector.util.PlotConfiguration;
 
 
 /**
- * @author Fabian Kramm, Timo Sztyler
+ * @author Fabian Kramm, Timo Sztyler, Nancy Kunath
  */
 public class MagneticFieldSensorCollector extends SensorCollector
 {
@@ -29,6 +35,9 @@ public class MagneticFieldSensorCollector extends SensorCollector
 
     private static Map<String, Plotter>        plotters = new HashMap<>();
     private static Map<String, List<String[]>> cache    = new HashMap<>();
+
+    private static TCPClient mTcpClient;
+    public static String currentJson;
 
 
     public MagneticFieldSensorCollector(Sensor sensor)
@@ -59,7 +68,11 @@ public class MagneticFieldSensorCollector extends SensorCollector
         newValues.put(valueNames[3], time);
 
         String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
-        MagneticFieldSensorCollector.writeDBStorage(deviceID, newValues);
+        if(true){
+            MagneticFieldSensorCollector.writeSensorData(deviceID, newValues);
+        } else{
+            MagneticFieldSensorCollector.writeDBStorage(deviceID, newValues);
+        }
         MagneticFieldSensorCollector.updateLivePlotter(deviceID, values);
     }
 
@@ -126,6 +139,58 @@ public class MagneticFieldSensorCollector extends SensorCollector
         SQLDBController.getInstance().execSQL(sqlTable);
     }
 
+    public static void writeSensorData(String deviceID, ContentValues newValues)
+    {
+        //if(Settings.DATABASE_DIRECT_INSERT) {
+        if(false){
+            if (mTcpClient != null && mTcpClient.getMRun() != false) {
+                JSONObject ObJson = new JSONObject();
+                try {
+                    ObJson.put("deviceID",deviceID);
+                    ObJson.put("sensorType","magneticField");
+                    JSONArray array = new JSONArray();
+                    JSONObject values = new JSONObject();
+                    values.put("timeStamp", newValues.getAsString("attr_time"));
+                    values.put("x", newValues.getAsString("attr_x"));
+                    values.put("y", newValues.getAsString("attr_y"));
+                    values.put("z", newValues.getAsString("attr_z"));
+                    array.put(values);
+                    ObJson.put("data",array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                currentJson = ObJson.toString();
+                new MagneticFieldSensorCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            return;
+        } else{
+            List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, 100);
+            if(clone != null) {
+                JSONObject ObJson = new JSONObject();
+                try {
+                    ObJson.put("deviceID",deviceID);
+                    ObJson.put("sensorType","magneticField");
+                    JSONArray array = new JSONArray();
+                    for (int i=1; i<clone.size(); i++) {
+                        JSONObject values = new JSONObject();
+                        values.put("timeStamp", clone.get(i)[0].toString());
+                        values.put("x", clone.get(i)[1].toString());
+                        values.put("y", clone.get(i)[2].toString());
+                        values.put("z", clone.get(i)[3].toString());
+                        array.put(values);
+                    }
+                    ObJson.put("data",array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(mTcpClient!=null && mTcpClient.getMRun() != false) {
+                    currentJson = ObJson.toString();
+                    new MagneticFieldSensorCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+        }
+    }
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
     {
@@ -150,5 +215,51 @@ public class MagneticFieldSensorCollector extends SensorCollector
 
     public void clearCache(String id) {
         cache.remove(id);
+    }
+
+    public static void openSocket(String deviceID){
+        // connect to the server
+        MagneticFieldSensorCollector.ConnectTask task = new MagneticFieldSensorCollector.ConnectTask();
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void closeSocket(String deviceID){
+        // disconnect to the server
+        mTcpClient.stopClient();
+        //mTcpClient.deregister();
+    }
+
+    private static class ConnectTask extends AsyncTask<String,String,TCPClient> {
+        public ConnectTask(){
+            super();
+        }
+
+        @Override
+        protected TCPClient doInBackground(String... message) {
+
+            mTcpClient = new TCPClient();
+            mTcpClient.run();
+
+            //mTcpClient = TCPClient.getInstance();
+            //mTcpClient.register();
+
+            return null;
+        }
+
+    }
+
+    private static class SendTask extends AsyncTask<String,String,TCPClient> {
+        public SendTask(){
+            super();
+        }
+
+        @Override
+        protected TCPClient doInBackground(String... message) {
+
+            mTcpClient.sendMessage(MagneticFieldSensorCollector.currentJson);
+
+            return null;
+        }
+
     }
 }

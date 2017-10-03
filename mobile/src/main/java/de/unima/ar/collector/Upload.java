@@ -2,12 +2,9 @@ package de.unima.ar.collector;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,6 +24,7 @@ public class Upload {
         int maxBufferSize = 1 * 1024 * 1024;
 
         File sourceFile = new File(sourceFileUri);
+
         if (!sourceFile.isFile()) {
             Log.e("VideoUpload", "Source File not found...");
             return;
@@ -34,8 +32,8 @@ public class Upload {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            //URL url = new URL("https://posttestserver.com/post.php");
-            URL url = new URL("http://192.168.0.129:8000/");
+            URL url = new URL("http://192.168.43.38:8000/");
+
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
@@ -46,6 +44,7 @@ public class Upload {
             System.setProperty("HTTP_ACCEPT", "*/*");
             System.setProperty("HTTP_EXPECT", "100-continue");
             conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            conn.setRequestProperty("Filename",fileName);
             dos = new DataOutputStream(conn.getOutputStream());
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);

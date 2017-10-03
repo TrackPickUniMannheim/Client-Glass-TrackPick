@@ -3,6 +3,7 @@ package de.unima.ar.collector.util;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.util.Log;
 
 import com.androidplot.ui.AnchorPosition;
 import com.androidplot.ui.DynamicTableModel;
@@ -43,7 +44,7 @@ import de.unima.ar.collector.sensors.StepDetectorSensorCollector;
  * Util klasse hier werden verschiedene static funktionen
  * bereitgestellt
  *
- * @author Fabian Kramm
+ * @author Fabian Kramm, Nancy Kunath
  */
 public class SensorDataUtil
 {
@@ -314,6 +315,41 @@ public class SensorDataUtil
         }
     }
 
+    public static void closeSocket(final int type, final String deviceID){
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(type == 1 || type == 0) {
+                    AccelerometerSensorCollector.closeSocket(deviceID);
+                }
+                if(type == 2 || type == 0) {
+                    MagneticFieldSensorCollector.closeSocket(deviceID);
+                }
+                if(type == 4 || type == 0) {
+                    GyroscopeSensorCollector.closeSocket(deviceID);
+                }
+            }
+        }).start();
+    }
+
+    public static void openSocket(final int type, final String deviceID){
+
+        if(type == 1 || type == 0) {
+            AccelerometerSensorCollector.openSocket(deviceID);
+            Log.i("SensorDataUtil", "Accelerometer - openSocket");
+        }
+        if(type == 2 || type == 0) {
+            MagneticFieldSensorCollector.openSocket(deviceID);
+            Log.i("SensorDataUtil", "MagneticField - openSocket");
+        }
+        if(type == 4 || type == 0) {
+            GyroscopeSensorCollector.openSocket(deviceID);
+            Log.i("SensorDataUtil", "Gyroscope - openSocket");
+        }
+
+    }
 
     public static void flushSensorDataCacheSync(final int type, final String deviceID)
     {

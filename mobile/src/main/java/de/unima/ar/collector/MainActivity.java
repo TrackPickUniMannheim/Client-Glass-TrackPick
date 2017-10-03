@@ -2,8 +2,8 @@ package de.unima.ar.collector;
 
 /**
  * University Mannheim
- * Last Modified : 19.02.2015
- * Author : Fabian Kramm, Timo Sztyler
+ * Last Modified : 03.10.2017
+ * Author : Fabian Kramm, Timo Sztyler, Nancy Kunath
  */
 
 import android.annotation.SuppressLint;
@@ -94,6 +94,7 @@ import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.shared.util.DeviceID;
+import de.unima.ar.collector.shared.util.Utils;
 import de.unima.ar.collector.ui.ActivityListRowAdapter;
 import de.unima.ar.collector.ui.ActivityOnItemClickListener;
 import de.unima.ar.collector.ui.AnalyzeRowAdapter;
@@ -354,20 +355,26 @@ public class MainActivity extends AppCompatActivity
                 // Flag if sensors are recording
                 SensorCollector sc = service.getSCM().getSensorCollectors().get(id);
                 if (this.glassRecordFlag) {
-                    if(!service.getSCM().removeSensor("", id)) {
+                    if (!service.getSCM().removeSensor("", id)) {
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                     } else {
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
-                        SensorDataUtil.flushSensorDataCacheSync(id, DeviceID.get(MainActivity.this));
+                        if (true) {
+                            SensorDataUtil.closeSocket(id, DeviceID.get(MainActivity.this));
+                        } else {
+                            SensorDataUtil.flushSensorDataCacheSync(id, DeviceID.get(MainActivity.this));
+                        }
                     }
-                }
-                else {
+                } else {
                     service.getSCM().clearCache(id, DeviceID.get(MainActivity.this));
                     if(!service.getSCM().enableCollectors(id)) {
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
                     } else {
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                         service.getSCM().registerSensorCollector(id);
+                        if(true){
+                            SensorDataUtil.openSocket(id, DeviceID.get(MainActivity.this));
+                        }
                     }
                 }
             }
@@ -1246,6 +1253,7 @@ public class MainActivity extends AppCompatActivity
 
     public void showSensorenDetail()
     {
+        final String deviceID = DeviceID.get(this);
         addScreen(Screens.SENSOREN_DETAILS);
         setContentView(R.layout.activity_main);
 
@@ -1308,7 +1316,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 } else {
                     String sensorName = txt2.getText().toString();
-                    int sensorID = SensorDataUtil.getSensorTypeInt("TYPE_" + txt1.getText().toString().toUpperCase(Locale.ENGLISH).replace(" ", "_"));
+                    final int sensorID = SensorDataUtil.getSensorTypeInt("TYPE_" + txt1.getText().toString().toUpperCase(Locale.ENGLISH).replace(" ", "_"));
                     SensorCollector sc = service.getSCM().getSensorCollectors().get(sensorID);
                     // Fall 1: Sensor läuft bereits dann removen wir ihn
                     if(chBx.isChecked()) {
@@ -1318,17 +1326,29 @@ public class MainActivity extends AppCompatActivity
                             //BroadcastService.getInstance().sendMessage("/sensor/unregister", String.valueOf(sensorID));
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
                             chBx.setChecked(false);
-                            SensorDataUtil.flushSensorDataCache(sensorID, DeviceID.get(MainActivity.this));
+                            new Thread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    if(true){
+                                        SensorDataUtil.closeSocket(sensorID, deviceID);
+                                    }else{
+                                        SensorDataUtil.flushSensorDataCache(sensorID, null);
+                                    }
+
+                                }
+                            }).start();
                         }
                     } else {
                         if(!service.getSCM().enableCollectors(sensorID)) {
                             Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
                         } else {
-                            if(Settings.WEARSENSOR) {
-                                //BroadcastService.getInstance().sendMessage("/sensor/register", "[" + sensorID + ", " + sc.getSensorRate() + "]");
-                            }
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                             service.getSCM().registerSensorCollector(sensorID);
+                            if(true){
+                                SensorDataUtil.openSocket(sensorID, deviceID);
+                            }
                             chBx.setChecked(true);
                         }
                     }
