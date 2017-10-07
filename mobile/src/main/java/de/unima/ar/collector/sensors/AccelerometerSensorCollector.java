@@ -130,10 +130,10 @@ public class AccelerometerSensorCollector extends SensorCollector
                     JSONArray array = new JSONArray();
                     for (int i=1; i<clone.size(); i++) {
                         JSONObject values = new JSONObject();
-                        values.put("timeStamp", clone.get(i)[0].toString());
-                        values.put("x", clone.get(i)[1].toString());
+                        values.put("timeStamp", clone.get(i)[1].toString());
+                        values.put("x", clone.get(i)[3].toString());
                         values.put("y", clone.get(i)[2].toString());
-                        values.put("z", clone.get(i)[3].toString());
+                        values.put("z", clone.get(i)[0].toString());
                         array.put(values);
                     }
                     ObJson.put("data",array);

@@ -1,4 +1,5 @@
 package de.unima.ar.collector; /**
+ * Created by Nancy Kunath on 03.10.2017.
  */
 import android.util.Log;
 import java.io.*;
@@ -9,7 +10,7 @@ import de.unima.ar.collector.shared.Settings;
 
 public class TCPClient {
 
-    public static String SERVER_IP = "192.168.0.129";
+    public static String SERVER_IP = "192.168.192.49";
     public static int SERVER_PORT = 9999;
     private String mServerMessage;
     private boolean mRun = false;
