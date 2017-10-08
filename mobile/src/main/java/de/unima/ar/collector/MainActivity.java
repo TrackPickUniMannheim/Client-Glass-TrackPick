@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         // style
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setIcon(R.drawable.ic_launcher);
+            getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         }
     }
@@ -1507,7 +1507,7 @@ public class MainActivity extends AppCompatActivity
             builder.setContentText(getString(R.string.app_toast_running1));
         }
 
-        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(intent);
 
         Notification notification = builder.build();
