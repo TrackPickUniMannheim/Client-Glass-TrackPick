@@ -15,13 +15,14 @@ import android.widget.Toast;
 
 import de.unima.ar.collector.R;
 import de.unima.ar.collector.SensorDataCollectorService;
-//import de.unima.ar.collector.api.BroadcastService;
 import de.unima.ar.collector.database.DatabaseExportSQL;
 import de.unima.ar.collector.sensors.CustomCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.ui.dialog.DatabaseDeleteDialog;
 import de.unima.ar.collector.ui.dialog.DatabaseExportCSVDialog;
+
+//import de.unima.ar.collector.api.BroadcastService;
 
 public class SettingActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -115,6 +116,16 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
                 break;
             case "database_csv":
                 databaseToCSV();
+                break;
+            case "server_streaming":
+                Settings.STREAMING = sharedPreferences.getBoolean(key, true);
+                //BroadcastService.getInstance().sendMessage("/settings", "[STREAMING, " + sharedPreferences.getBoolean(key, true) + "]");
+                break;
+            case "server_ip":
+                Settings.SERVER_IP = sharedPreferences.getString(key,"10.0.2.2");
+                break;
+            case "server_port":
+                Settings.SERVER_PORT = Integer.parseInt(sharedPreferences.getString(key,"9999"));
                 break;
             default:
         }

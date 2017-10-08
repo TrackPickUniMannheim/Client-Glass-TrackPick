@@ -22,12 +22,10 @@ import android.hardware.Sensor;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,24 +48,11 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeriesFormatter;
 import com.androidplot.xy.XYStepMode;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-/*import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions; */
 
-import java.io.File;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,8 +60,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-//import de.unima.ar.collector.api.BroadcastService;
-//import de.unima.ar.collector.api.ListenerService;
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.AdapterController;
 import de.unima.ar.collector.controller.BluetoothController;
@@ -86,15 +69,12 @@ import de.unima.ar.collector.database.DatabaseExportSQL;
 import de.unima.ar.collector.database.DatabaseHelper;
 import de.unima.ar.collector.extended.Plotter;
 import de.unima.ar.collector.extended.SensorSelfTest;
-import de.unima.ar.collector.sensors.AccelerometerSensorCollector;
 import de.unima.ar.collector.sensors.CustomCollector;
-//import de.unima.ar.collector.sensors.GPSCollector;
 import de.unima.ar.collector.sensors.SensorCollector;
 import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.shared.util.DeviceID;
-import de.unima.ar.collector.shared.util.Utils;
 import de.unima.ar.collector.ui.ActivityListRowAdapter;
 import de.unima.ar.collector.ui.ActivityOnItemClickListener;
 import de.unima.ar.collector.ui.AnalyzeRowAdapter;
@@ -106,7 +86,6 @@ import de.unima.ar.collector.ui.SeparatedListAdapter;
 import de.unima.ar.collector.ui.SettingActivity;
 import de.unima.ar.collector.ui.dialog.CreateCorrectionDialog;
 import de.unima.ar.collector.ui.dialog.DatabaseSensorDialog;
-//import de.unima.ar.collector.ui.dialog.GPSDatabaseDialog;
 import de.unima.ar.collector.util.CustomPointFormatter;
 import de.unima.ar.collector.util.DBUtils;
 import de.unima.ar.collector.util.DateFormat;
@@ -114,6 +93,19 @@ import de.unima.ar.collector.util.PlotConfiguration;
 import de.unima.ar.collector.util.SensorDataUtil;
 import de.unima.ar.collector.util.StringUtils;
 import de.unima.ar.collector.util.Triple;
+
+/*import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions; */
+//import de.unima.ar.collector.api.BroadcastService;
+//import de.unima.ar.collector.api.ListenerService;
+//import de.unima.ar.collector.sensors.GPSCollector;
+//import de.unima.ar.collector.ui.dialog.GPSDatabaseDialog;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -152,6 +144,9 @@ public class MainActivity extends AppCompatActivity
         Settings.ACCLOWPASS = pref.getBoolean("sensor_lowpass", false);
         Settings.SENSOR_DEFAULT_FREQUENCY = Double.parseDouble(pref.getString("sensor_frequency", "50.0f"));
         Settings.LIVE_PLOTTER_ENABLED = pref.getBoolean("live_plotter", true);
+        Settings.STREAMING = pref.getBoolean("server_streaming", true);
+        Settings.SERVER_IP = pref.getString("server_ip","10.0.2.2");
+        Settings.SERVER_PORT = Integer.parseInt(pref.getString("server_port","9999"));
 
         // register
         String deviceID = DeviceID.get(this);

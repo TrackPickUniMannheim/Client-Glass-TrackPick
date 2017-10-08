@@ -223,7 +223,7 @@
     <string name="analyze_analyzelive_loading9">Complete</string>
 
     <!-- Export / About -->
-    <string name="option_export_title">Database</string>
+    <string name="option_export_title">Save Data</string>
     <string name="option_export_delete">Delete database</string>
     <string name="option_export_delete_desc">Deletes absolute everything</string>
     <string name="option_export_delete_message">Are you really sure that you want to delete the whole database? Please confirm this action.</string>
