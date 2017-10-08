@@ -15,13 +15,21 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 
+import de.unima.ar.collector.SensorDataCollectorService;
+import de.unima.ar.collector.TCPClient;
 import de.unima.ar.collector.Upload;
 import de.unima.ar.collector.controller.ActivityController;
 import de.unima.ar.collector.controller.SQLDBController;
 import de.unima.ar.collector.extended.Plotter;
+import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
+import de.unima.ar.collector.shared.util.DeviceID;
 import de.unima.ar.collector.util.FileUtil;
 
 /**
@@ -41,6 +49,8 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
     private static String videoName;
     private static String videoUrl;
 
+    private static TCPClient mTcpClient;
+
 
     @Override
     public void onRegistered()
@@ -57,6 +67,9 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
 
         this.windowManager.addView(this.surfaceView, layoutParams);
         this.surfaceView.getHolder().addCallback(this);
+
+        ConnectTask task = new ConnectTask();
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         Log.i("Video", "Video registered");
     }
@@ -83,8 +96,14 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         Log.i("Video", "Video deregistered and stored to: " + root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
 
         this.videoName = ("video_" + startTime + ".mp4");
+
+        if(Settings.STREAMING){
+            new VideoCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
         this.videoUrl = (root.getAbsolutePath()+ "/video_" + startTime + ".mp4");
         uploadVideo();
+
     }
 
 
@@ -199,4 +218,56 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         UploadVideo uv = new UploadVideo();
         uv.execute();
     }
+
+    private static class ConnectTask extends AsyncTask<String,String,TCPClient> {
+        public ConnectTask(){
+            super();
+        }
+
+        @Override
+        protected TCPClient doInBackground(String... message) {
+
+            mTcpClient = new TCPClient();
+            mTcpClient.run();
+
+            //mTcpClient = TCPClient.getInstance();
+            //mTcpClient.register();
+
+            return null;
+        }
+
+    }
+
+    private static class SendTask extends AsyncTask<String,String,TCPClient> {
+        public SendTask(){
+            super();
+        }
+
+        @Override
+        protected TCPClient doInBackground(String... message) {
+
+            String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
+            JSONObject ObJson = new JSONObject();
+            try {
+                ObJson.put("deviceID",deviceID);
+                ObJson.put("sensorType","video");
+                JSONArray array = new JSONArray();
+                JSONObject values = new JSONObject();
+                values.put("videoName", videoName);
+                array.put(values);
+                ObJson.put("data",array);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i("VIDEO",ObJson.toString());
+            mTcpClient.sendMessage(ObJson.toString());
+            mTcpClient.sendMessage("Disconnect");
+
+            mTcpClient.stopClient();
+
+            return null;
+        }
+
+    }
+
 }

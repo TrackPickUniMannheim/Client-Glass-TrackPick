@@ -54,9 +54,9 @@ public class TCPClient {
 
     public void stopClient() {
         TCPClient.counter--;
-        if(counter == 0){
+        /*if(counter == 0){
             sendMessage("Disconnect");
-        }
+        }*/
 
         mRun = false;
 
