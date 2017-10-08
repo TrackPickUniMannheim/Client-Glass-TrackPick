@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        if (this.glassRecordFlag) {
+        if (!Settings.STREAMING && this.glassRecordFlag) {
             DatabaseDelete deleteTask = new DatabaseDelete(this, true);
             DatabaseExportSQL task = new DatabaseExportSQL(this, deleteTask);
             task.execute();
