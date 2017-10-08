@@ -68,7 +68,7 @@ public class MagneticFieldSensorCollector extends SensorCollector
         newValues.put(valueNames[3], time);
 
         String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
-        if(true){
+        if(Settings.STREAMING){
             MagneticFieldSensorCollector.writeSensorData(deviceID, newValues);
         } else{
             MagneticFieldSensorCollector.writeDBStorage(deviceID, newValues);
@@ -141,7 +141,6 @@ public class MagneticFieldSensorCollector extends SensorCollector
 
     public static void writeSensorData(String deviceID, ContentValues newValues)
     {
-        //if(Settings.DATABASE_DIRECT_INSERT) {
         if(false){
             if (mTcpClient != null && mTcpClient.getMRun() != false) {
                 JSONObject ObJson = new JSONObject();

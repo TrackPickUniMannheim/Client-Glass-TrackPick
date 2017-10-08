@@ -10,8 +10,8 @@ import de.unima.ar.collector.shared.Settings;
 
 public class TCPClient {
 
-    public static String SERVER_IP = "192.168.192.49";
-    public static int SERVER_PORT = 9999;
+    public static String SERVER_IP = Settings.SERVER_IP;
+    public static int SERVER_PORT = Settings.SERVER_PORT;
     private String mServerMessage;
     private boolean mRun = false;
     private PrintWriter mBufferOut;

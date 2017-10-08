@@ -69,7 +69,7 @@ public class GyroscopeSensorCollector extends SensorCollector
         newValues.put(valueNames[3], time);
 
         String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
-        if(true){
+        if(Settings.STREAMING){
             GyroscopeSensorCollector.writeSensorData(deviceID, newValues);
         }else{
             GyroscopeSensorCollector.writeDBStorage(deviceID, newValues);
@@ -142,7 +142,6 @@ public class GyroscopeSensorCollector extends SensorCollector
 
     public static void writeSensorData(String deviceID, ContentValues newValues) {
 
-        //if (Settings.DATABASE_DIRECT_INSERT) {
         if(false){
             if (mTcpClient != null && mTcpClient.getMRun() != false) {
                 JSONObject ObJson = new JSONObject();

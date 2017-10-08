@@ -244,8 +244,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onKeyUp(int code, KeyEvent event) {
         if (code == 4) {
-        //if (code == KeyEvent.KEYCODE_VOLUME_DOWN) {
-
             this.recordSimulaniously();
         } else {
             super.onKeyUp(code, event);
@@ -354,7 +352,7 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                     } else {
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
-                        if (true) {
+                        if(Settings.STREAMING){
                             SensorDataUtil.closeSocket(id, DeviceID.get(MainActivity.this));
                         } else {
                             SensorDataUtil.flushSensorDataCacheSync(id, DeviceID.get(MainActivity.this));
@@ -367,7 +365,7 @@ public class MainActivity extends AppCompatActivity
                     } else {
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                         service.getSCM().registerSensorCollector(id);
-                        if(true){
+                        if(Settings.STREAMING){
                             SensorDataUtil.openSocket(id, DeviceID.get(MainActivity.this));
                         }
                     }
@@ -1326,7 +1324,7 @@ public class MainActivity extends AppCompatActivity
                                 @Override
                                 public void run()
                                 {
-                                    if(true){
+                                    if(Settings.STREAMING){
                                         SensorDataUtil.closeSocket(sensorID, deviceID);
                                     }else{
                                         SensorDataUtil.flushSensorDataCache(sensorID, null);
@@ -1341,7 +1339,7 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                             service.getSCM().registerSensorCollector(sensorID);
-                            if(true){
+                            if(Settings.STREAMING){
                                 SensorDataUtil.openSocket(sensorID, deviceID);
                             }
                             chBx.setChecked(true);

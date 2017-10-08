@@ -86,8 +86,7 @@ public class AccelerometerSensorCollector extends SensorCollector
         newValues.put(valueNames[3], time);
 
         String deviceID = DeviceID.get(SensorDataCollectorService.getInstance());
-        if(true){
-        //if(Settings.STREAMING){
+        if(Settings.STREAMING){
             AccelerometerSensorCollector.writeSensorData(deviceID, newValues);
         }else{
             AccelerometerSensorCollector.writeDBStorage(deviceID, newValues);
@@ -96,7 +95,6 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     public static void writeSensorData(String deviceID, ContentValues newValues)
     {
-        //if(Settings.DATABASE_DIRECT_INSERT) {
         if(false){
             if(mTcpClient!=null && mTcpClient.getMRun() != false) {
                 JSONObject ObJson = new JSONObject();
