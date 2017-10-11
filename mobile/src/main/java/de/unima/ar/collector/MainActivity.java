@@ -22,6 +22,7 @@ import android.hardware.Sensor;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -75,6 +76,7 @@ import de.unima.ar.collector.sensors.SensorCollectorManager;
 import de.unima.ar.collector.shared.Settings;
 import de.unima.ar.collector.shared.database.SQLTableName;
 import de.unima.ar.collector.shared.util.DeviceID;
+import de.unima.ar.collector.shared.util.Utils;
 import de.unima.ar.collector.ui.ActivityListRowAdapter;
 import de.unima.ar.collector.ui.ActivityOnItemClickListener;
 import de.unima.ar.collector.ui.AnalyzeRowAdapter;
@@ -312,7 +314,7 @@ public class MainActivity extends AppCompatActivity
     // TODO: Write DB
     public void recordSimulaniously() {
         SensorDataCollectorService service = SensorDataCollectorService.getInstance();
-        int[] sensors = {
+        final int[] sensors = {
                 SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
                 SensorDataUtil.getSensorTypeInt("TYPE_ACCELEROMETER"),
                 //SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
@@ -351,12 +353,10 @@ public class MainActivity extends AppCompatActivity
                     if (!service.getSCM().removeSensor("", id)) {
                         Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                     } else {
+                        SensorDataUtil.streamCache(id,DeviceID.get(MainActivity.this));
+
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
-                        if(Settings.STREAMING){
-                            SensorDataUtil.closeSocket(id, DeviceID.get(MainActivity.this));
-                        } else {
-                            SensorDataUtil.flushSensorDataCacheSync(id, DeviceID.get(MainActivity.this));
-                        }
+
                     }
                 } else {
                     service.getSCM().clearCache(id, DeviceID.get(MainActivity.this));
@@ -371,6 +371,32 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+        }
+
+        if(this.glassRecordFlag){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    for (final int id: sensors) {
+                        new Thread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                //Utils.makeToast(MainActivity.this, R.string.sensor_disabled, Toast.LENGTH_LONG);
+
+                                if(Settings.STREAMING){
+                                    SensorDataUtil.closeSocket(id, DeviceID.get(MainActivity.this));
+                                }else{
+                                    SensorDataUtil.flushSensorDataCache(id, null);
+                                }
+
+                            }
+                        }).start();
+                    }
+                }
+            }, 2000);
+
         }
 
         if (!Settings.STREAMING && this.glassRecordFlag) {
