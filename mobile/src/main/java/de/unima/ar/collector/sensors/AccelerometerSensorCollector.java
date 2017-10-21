@@ -239,8 +239,7 @@ public class AccelerometerSensorCollector extends SensorCollector
     public static void streamCache(String deviceID){
         List<String[]> buffer = cache.get(deviceID);
 
-        Log.i("Cache Accelerometer",Integer.toString(buffer.size()));
-        if(buffer.size() <= 1) {
+        if(buffer == null || buffer.size() <= 1) {
             return;
         }
 
@@ -280,8 +279,8 @@ public class AccelerometerSensorCollector extends SensorCollector
 
     public static void closeSocket(String deviceID){
         // disconnect to the server
-        //mTcpClient.stopClient();
-        mTcpClient.deregister();
+        mTcpClient.stopClient();
+        //mTcpClient.deregister();
     }
 
     private static class ConnectTask extends AsyncTask<String,String,TCPClient> {
@@ -292,11 +291,11 @@ public class AccelerometerSensorCollector extends SensorCollector
         @Override
         protected TCPClient doInBackground(String... message) {
 
-            //mTcpClient = new TCPClient();
-            //mTcpClient.run();
+            mTcpClient = new TCPClient();
+            mTcpClient.run();
 
-            mTcpClient = TCPClient.getInstance();
-            mTcpClient.register();
+            //mTcpClient = TCPClient.getInstance();
+            //mTcpClient.register();
 
             return null;
         }
