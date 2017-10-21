@@ -227,11 +227,11 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
         @Override
         protected TCPClient doInBackground(String... message) {
 
-            mTcpClient = new TCPClient();
-            mTcpClient.run();
+            //mTcpClient = new TCPClient();
+            //mTcpClient.run();
 
-            //mTcpClient = TCPClient.getInstance();
-            //mTcpClient.register();
+            mTcpClient = TCPClient.getInstance();
+            mTcpClient.register();
 
             return null;
         }
