@@ -120,7 +120,7 @@ public class AccelerometerSensorCollector extends SensorCollector
             }
             return;
         } else {
-            List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, 100);
+            List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, 50);
             if(clone != null) {
                 JSONObject ObJson = new JSONObject();
                 try {
@@ -279,9 +279,9 @@ public class AccelerometerSensorCollector extends SensorCollector
     }
 
     public static void closeSocket(String deviceID){
-        // disconnect from the server
-        mTcpClient.stopClient();
-        //mTcpClient.deregister();
+        // disconnect to the server
+        //mTcpClient.stopClient();
+        mTcpClient.deregister();
     }
 
     private static class ConnectTask extends AsyncTask<String,String,TCPClient> {
@@ -292,11 +292,11 @@ public class AccelerometerSensorCollector extends SensorCollector
         @Override
         protected TCPClient doInBackground(String... message) {
 
-            mTcpClient = new TCPClient();
-            mTcpClient.run();
+            //mTcpClient = new TCPClient();
+            //mTcpClient.run();
 
-            //mTcpClient = TCPClient.getInstance();
-            //mTcpClient.register();
+            mTcpClient = TCPClient.getInstance();
+            mTcpClient.register();
 
             return null;
         }

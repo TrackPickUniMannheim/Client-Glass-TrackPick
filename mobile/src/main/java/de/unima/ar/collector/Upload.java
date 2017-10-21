@@ -9,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import de.unima.ar.collector.shared.Settings;
+
 
 public class Upload {
 
@@ -32,7 +34,7 @@ public class Upload {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            URL url = new URL("http://192.168.43.38:8000/");
+            URL url = new URL("http://"+Settings.SERVER_IP +":8000/");
 
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
