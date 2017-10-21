@@ -51,13 +51,10 @@ public class TCPClient {
     }
 
     public void stopClient() {
-        //TCPClient.counter--;
+        TCPClient.counter--;
         //if(counter == 0){
-        //    sendMessage("Disconnect");
+            sendMessage("Disconnect");
         //}
-
-        TCPClient.counter = 0;
-        sendMessage("Disconnect");
 
         mRun = false;
 
@@ -93,7 +90,7 @@ public class TCPClient {
                     sendMessage("Connect");
                 }
 
-                //TCPClient.counter++;
+                TCPClient.counter++;
 
                 //listens for messages from server
                 while (mRun) {
