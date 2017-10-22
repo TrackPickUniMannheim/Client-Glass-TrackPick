@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity
         final int[] sensors = {
                 SensorDataUtil.getSensorTypeInt("TYPE_VIDEO"),
                 SensorDataUtil.getSensorTypeInt("TYPE_ACCELEROMETER"),
-                //SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
+                SensorDataUtil.getSensorTypeInt("TYPE_GYROSCOPE"),
                 SensorDataUtil.getSensorTypeInt("TYPE_MAGNETIC_FIELD")
         };
         if (this.glassRecordFlag) {

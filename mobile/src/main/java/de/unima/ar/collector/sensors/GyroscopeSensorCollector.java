@@ -142,30 +142,7 @@ public class GyroscopeSensorCollector extends SensorCollector
     }
 
     public static void writeSensorData(String deviceID, ContentValues newValues) {
-
-        if(false){
-            if (mTcpClient != null && mTcpClient.getMRun() != false) {
-                JSONObject ObJson = new JSONObject();
-                try {
-                    ObJson.put("deviceID", deviceID);
-                    ObJson.put("sensorType", "gyroscope");
-                    JSONArray array = new JSONArray();
-                    JSONObject values = new JSONObject();
-                    values.put("timeStamp", newValues.getAsString("attr_time"));
-                    values.put("x", newValues.getAsString("attr_x"));
-                    values.put("y", newValues.getAsString("attr_y"));
-                    values.put("z", newValues.getAsString("attr_z"));
-                    array.put(values);
-                    ObJson.put("data", array);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                currentJson = ObJson.toString();
-                new GyroscopeSensorCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-            return;
-        } else {
+        if (idx % 8 == 0) {
             List<String[]> clone = DBUtils.manageCache(deviceID, cache, newValues, 50);
             if (clone != null) {
                 JSONObject ObJson = new JSONObject();
@@ -186,11 +163,12 @@ public class GyroscopeSensorCollector extends SensorCollector
                     e.printStackTrace();
                 }
                 if (mTcpClient != null && mTcpClient.getMRun() != false) {
-                    currentJson = ObJson.toString();
+                    GyroscopeSensorCollector.currentJson = ObJson.toString();
                     new GyroscopeSensorCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
         }
+        idx++;
     }
 
     public static void writeDBStorage(String deviceID, ContentValues newValues)
@@ -248,7 +226,7 @@ public class GyroscopeSensorCollector extends SensorCollector
             e.printStackTrace();
         }
         if(mTcpClient!=null && mTcpClient.getMRun() != false) {
-            currentJson = ObJson.toString();
+            GyroscopeSensorCollector.currentJson = ObJson.toString();
             new GyroscopeSensorCollector.SendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
