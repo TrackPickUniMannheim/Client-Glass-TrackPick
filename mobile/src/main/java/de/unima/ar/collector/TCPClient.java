@@ -14,30 +14,9 @@ public class TCPClient {
     private boolean mRun = false;
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
-    private static TCPClient tcpClient = new TCPClient();
     private static Integer counter = 0;
 
-    /*public TCPClient() {
-
-    }*/
-
-    public static TCPClient getInstance(){
-        return tcpClient;
-    }
-
-    public void register(){
-        counter++;
-        if(counter == 1){
-            run();
-        }
-    }
-
-    public void deregister(){
-        counter--;
-        if(counter == 0){
-            stopClient();
-        }
-    }
+    public TCPClient() {}
 
     public boolean getMRun(){
         return mRun;

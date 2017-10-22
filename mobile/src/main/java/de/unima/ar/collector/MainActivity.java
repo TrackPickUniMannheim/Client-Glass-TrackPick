@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity
                         DBUtils.updateSensorStatus(id, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                         service.getSCM().registerSensorCollector(id);
                         if(Settings.STREAMING){
-                            SensorDataUtil.openSocket(id, DeviceID.get(MainActivity.this));
+                            SensorDataUtil.openSocket(id);
                         }
                     }
                 }
@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity
                                 //Utils.makeToast(MainActivity.this, R.string.sensor_disabled, Toast.LENGTH_LONG);
 
                                 if(Settings.STREAMING){
-                                    SensorDataUtil.closeSocket(id, DeviceID.get(MainActivity.this));
+                                    SensorDataUtil.closeSocket(id);
                                 }else{
                                     SensorDataUtil.flushSensorDataCache(id, null);
                                 }
@@ -1337,12 +1337,11 @@ public class MainActivity extends AppCompatActivity
                     String sensorName = txt2.getText().toString();
                     final int sensorID = SensorDataUtil.getSensorTypeInt("TYPE_" + txt1.getText().toString().toUpperCase(Locale.ENGLISH).replace(" ", "_"));
                     SensorCollector sc = service.getSCM().getSensorCollectors().get(sensorID);
-                    // Fall 1: Sensor läuft bereits dann removen wir ihn
+                    // Revome Sensor
                     if(chBx.isChecked()) {
                         if(!service.getSCM().removeSensor(sensorName, sensorID)) {
                             Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify1), Toast.LENGTH_LONG).show();
                         } else {
-                            //BroadcastService.getInstance().sendMessage("/sensor/unregister", String.valueOf(sensorID));
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 0); // microseconds -> hertz
                             chBx.setChecked(false);
                             new Thread(new Runnable()
@@ -1351,7 +1350,7 @@ public class MainActivity extends AppCompatActivity
                                 public void run()
                                 {
                                     if(Settings.STREAMING){
-                                        SensorDataUtil.closeSocket(sensorID, deviceID);
+                                        SensorDataUtil.closeSocket(sensorID);
                                     }else{
                                         SensorDataUtil.flushSensorDataCache(sensorID, null);
                                     }
@@ -1359,6 +1358,7 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }).start();
                         }
+                    //Add Sensor
                     } else {
                         if(!service.getSCM().enableCollectors(sensorID)) {
                             Toast.makeText(getBaseContext(), getString(R.string.sensor_collector_generel_notify2), Toast.LENGTH_LONG).show();
@@ -1366,7 +1366,7 @@ public class MainActivity extends AppCompatActivity
                             DBUtils.updateSensorStatus(sensorID, (1000 * 1000) / sc.getSensorRate(), 1); // microseconds -> hertz
                             service.getSCM().registerSensorCollector(sensorID);
                             if(Settings.STREAMING){
-                                SensorDataUtil.openSocket(sensorID, deviceID);
+                                SensorDataUtil.openSocket(sensorID);
                             }
                             chBx.setChecked(true);
                         }

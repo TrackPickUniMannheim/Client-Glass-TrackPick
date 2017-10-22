@@ -235,18 +235,18 @@ public class GyroscopeSensorCollector extends SensorCollector
         cache.remove(id);
     }
 
-    public static void openSocket(String deviceID){
+    public static void openSocket(){
         // connect to the server
         GyroscopeSensorCollector.ConnectTask task = new GyroscopeSensorCollector.ConnectTask();
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void closeSocket(String deviceID){
-        // disconnect to the server
+    public static void closeSocket(){
+        // disconnect from server
         mTcpClient.stopClient();
-        //mTcpClient.deregister();
     }
 
+    //asynchronous task for connecting to server
     private static class ConnectTask extends AsyncTask<String,String,TCPClient> {
         public ConnectTask(){
             super();
@@ -258,14 +258,12 @@ public class GyroscopeSensorCollector extends SensorCollector
             mTcpClient = new TCPClient();
             mTcpClient.run();
 
-            //mTcpClient = TCPClient.getInstance();
-            //mTcpClient.register();
-
             return null;
         }
 
     }
 
+    //asynchronous task for sending a message to the server
     private static class SendTask extends AsyncTask<String,String,TCPClient> {
         public SendTask(){
             super();
