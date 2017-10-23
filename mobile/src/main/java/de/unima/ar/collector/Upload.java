@@ -23,9 +23,12 @@ public class Upload {
         String boundary = "------------------------aaf9764291ba1fa4";
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
+        int maxBufferSize = 1 * 1024;
 
         File sourceFile = new File(sourceFileUri);
+
+        //specify length of body for enable message sending of big files
+        int length = (int) sourceFile.length() + 175;
 
         if (!sourceFile.isFile()) {
             Log.e("VideoUpload", "Source File not found...");
@@ -39,6 +42,7 @@ public class Upload {
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
+            conn.setFixedLengthStreamingMode(length);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("SSL_CIPHER", "ECDHE-RSA-AES256-GCM-SHA384");
             conn.setRequestProperty("Accept-Encoding", "identity");
@@ -73,6 +77,7 @@ public class Upload {
             fileInputStream.close();
             dos.flush();
             dos.close();
+            dos = null;
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (Exception e) {

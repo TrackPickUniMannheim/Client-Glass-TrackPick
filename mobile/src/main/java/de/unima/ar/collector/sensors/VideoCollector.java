@@ -230,9 +230,6 @@ public class VideoCollector extends CustomCollector implements SurfaceHolder.Cal
             mTcpClient = new TCPClient();
             mTcpClient.run();
 
-            //mTcpClient = TCPClient.getInstance();
-            //mTcpClient.register();
-
             return null;
         }
 
